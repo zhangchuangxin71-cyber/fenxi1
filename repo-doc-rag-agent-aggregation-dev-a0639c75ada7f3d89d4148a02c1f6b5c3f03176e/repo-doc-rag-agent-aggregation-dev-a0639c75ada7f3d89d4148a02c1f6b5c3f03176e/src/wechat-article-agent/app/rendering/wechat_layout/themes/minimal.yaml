@@ -1,0 +1,9 @@
+id: minimal
+version: "1"
+label: 内容极简
+source: "wewrite@b998de8 + aiworkskills@c83831a adapted"
+suitable_for: [观点, 学术, 深度说明]
+colors: {text: "#353535", heading: "#171717", muted: "#777777", primary: "#4B5563", secondary: "#6B7280", accent: "#9CA3AF", background: "#FFFFFF", surface: "#FAFAFA", border: "#E5E7EB", code_background: "#F5F5F5"}
+typography: {body_size: "16px", body_line_height: "1.9", h1_size: "25px", h2_size: "19px", h3_size: "17px", caption_size: "12px", letter_spacing: "0"}
+spacing: {content_padding: "0 14px", paragraph_margin: "0 0 20px", section_margin: "50px 0 24px"}
+variants: {profile: minimal, blockquote: line, list: marker, code: light}

@@ -1,0 +1,14 @@
+.git
+.env
+.venv
+.langgraph_api
+__pycache__
+*.py[cod]
+.pytest_cache
+.ruff_cache
+.mypy_cache
+dev
+docs
+tests
+playwright-report
+test-results

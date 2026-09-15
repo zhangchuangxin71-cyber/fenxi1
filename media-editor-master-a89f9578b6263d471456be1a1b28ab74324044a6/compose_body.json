@@ -1,0 +1,62 @@
+{
+  "code": "e2e",
+  "id": "noodle-stateless",
+  "subtitle_mode": "hard",
+  "reuse_intermediates": true,
+  "cleanup_scratch_on_success": true,
+  "audio": {
+    "master_audio_url": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_master.wav",
+    "subtitle_srt_url": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_subtitle.srt",
+    "segment_urls": {
+      "1": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg1.wav",
+      "2": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg2.wav",
+      "3": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg3.wav",
+      "4": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg4.wav",
+      "5": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg5.wav",
+      "6": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg6.wav",
+      "7": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg7.wav",
+      "8": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg8.wav",
+      "9": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg9.wav",
+      "10": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg10.wav",
+      "11": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg11.wav",
+      "12": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg12.wav",
+      "13": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg13.wav",
+      "14": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg14.wav",
+      "15": "https://example-bucket.oss-cn-region.aliyuncs.com/prod/ImagesVideosText2Video/e2e-noodle-stateless/2026-06-25/task_8dd7113af852_seg15.wav"
+    },
+    "segments": [
+      { "index": 1, "text": "夜深之后，城市褪去了白日的喧嚣，", "duration_sec": 4.005488, "clip_duration_sec": 4.16 },
+      { "index": 2, "text": "穿行在空旷的街道上，", "duration_sec": 2.5078, "clip_duration_sec": 2.68 },
+      { "index": 3, "text": "抬眼望去，街角的面馆亮着一盏暖融融的灯。", "duration_sec": 4.307324, "clip_duration_sec": 4.68 },
+      { "index": 4, "text": "放眼望去，小店不大，却在冷清的夜色里显得格外温馨，", "duration_sec": 5.329478, "clip_duration_sec": 5.48 },
+      { "index": 5, "text": "成了晚归之人的一处避风港。", "duration_sec": 3.925488, "clip_duration_sec": 4.28 },
+      { "index": 6, "text": "细看，大锅里的骨汤咕嘟咕嘟持续翻滚，", "duration_sec": 3.925488, "clip_duration_sec": 4.08 },
+      { "index": 7, "text": "手工面条下入锅中，在沸水里轻轻起伏。", "duration_sec": 4.725283, "clip_duration_sec": 5.08 },
+      { "index": 8, "text": "一碗碗热气腾腾的面食被端上桌，", "duration_sec": 4.214444, "clip_duration_sec": 4.4 },
+      { "index": 9, "text": "升腾的白雾裹着鲜香，", "duration_sec": 5.503175, "clip_duration_sec": 5.68 },
+      { "index": 10, "text": "瞬间驱散了深夜的寒意。", "duration_sec": 3.018639, "clip_duration_sec": 3.4 },
+      { "index": 11, "text": "加班至深夜的打工人、", "duration_sec": 4.307324, "clip_duration_sec": 4.48 },
+      { "index": 12, "text": "独自在外打拼的异乡人安静坐在桌前，", "duration_sec": 2.600658, "clip_duration_sec": 2.76 },
+      { "index": 13, "text": "低头嗦面、小口喝汤。", "duration_sec": 3.703605, "clip_duration_sec": 4.08 },
+      { "index": 14, "text": "一口热食下肚，一路奔波的疲惫、", "duration_sec": 5.630862, "clip_duration_sec": 5.8 },
+      { "index": 15, "text": "独处异乡的孤单，都在这一碗面的温度里慢慢消散。", "duration_sec": 5.630862, "clip_duration_sec": 5.64 }
+    ]
+  },
+  "segments": [
+    { "index": 1, "text": "夜深之后，城市褪去了白日的喧嚣，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/1.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 2, "text": "穿行在空旷的街道上，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/2.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 3, "text": "抬眼望去，街角的面馆亮着一盏暖融融的灯。", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/3.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 4, "text": "放眼望去，小店不大，却在冷清的夜色里显得格外温馨，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/4.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 5, "text": "成了晚归之人的一处避风港。", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/5.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 6, "text": "细看，大锅里的骨汤咕嘟咕嘟持续翻滚，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/6.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 7, "text": "手工面条下入锅中，在沸水里轻轻起伏。", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/7.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 8, "text": "一碗碗热气腾腾的面食被端上桌，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/8.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 9, "text": "升腾的白雾裹着鲜香，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/9.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 10, "text": "瞬间驱散了深夜的寒意。", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/10.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 11, "text": "加班至深夜的打工人、", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/11.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 12, "text": "独自在外打拼的异乡人安静坐在桌前，", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/12.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 13, "text": "低头嗦面、小口喝汤。", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/13.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 14, "text": "一口热食下肚，一路奔波的疲惫、", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/14.mp4", "type": "video", "start_sec": 0 } },
+    { "index": 15, "text": "独处异乡的孤单，都在这一碗面的温度里慢慢消散。", "media": { "url": "https://example-bucket.oss-cn-region.aliyuncs.com/source_media/14.mp4", "type": "video", "start_sec": 0 } }
+  ]
+}

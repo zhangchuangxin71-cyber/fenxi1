@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+    image: rag-agent-codex:latest
+    container_name: rag-agent-codex
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: ${APP_PORT:-8115}
+    ports:
+      - "${APP_PORT:-8115}:${APP_PORT:-8115}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - rag_agent_logs:/app/logs
+    networks:
+      - pageindex
+
+networks:
+  pageindex:
+    external: true
+    name: ${DOCKER_NETWORK:-pageindex}
+
+volumes:
+  rag_agent_logs:

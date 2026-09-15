@@ -1,0 +1,1184 @@
+openapi: 3.1.0
+info:
+  title: 视频切片服务 API
+  description: '视频手动切片与自动分镜切片服务。
+
+
+    - **唯一接口**：`/api/v1/*`
+
+    - **响应格式**：`{code, message, data}`（二进制媒体除外）
+
+    - **主键**：`video_id` / `job_id` / `segment_id` 均为标准 UUID
+
+    - **主路径**：异步 import（轮询 Video 至 ready）→ `POST /jobs/manual` 或 `POST /jobs/auto`
+    →（自动再 `/cut`）→ 轮询 → publish
+
+    - **映射说明**：[/docs/static/api-mapping.md](/docs/static/api-mapping.md)
+
+    - 无鉴权：勿对公网裸暴露'
+  version: 1.0.0
+paths:
+  /api/v1/health:
+    get:
+      tags:
+      - 系统
+      summary: 健康检查
+      operationId: health_api_v1_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/v1/videos/import:
+    post:
+      tags:
+      - 源片与视频
+      summary: 提交源片导入（异步）
+      description: 传入 **oss_key**（配置桶）或 **url**（任意可访问 http(s)，SSRF 校验后
+        安全流式转存 OSS）二选一。立刻返回瘦身 `{video_id, status=importing, oss_key?, source_url?}`；随后
+        `GET /videos/{video_id}` 轮询至 `status=ready`（或 `failed`）。主键为标准 UUID。
+      operationId: import_video_api_v1_videos_import_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OssImportRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportSubmittedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/videos/{video_id}:
+    get:
+      tags:
+      - 源片与视频
+      summary: 获取视频信息（轮询导入状态）
+      description: 路径参数 **`video_id`** = 响应字段 **`video_id`**。导入中：`status=importing`；完成后：`status=ready`
+        且含 waveform / preview_url。
+      operationId: get_video_api_v1_videos__video_id__get
+      parameters:
+      - name: video_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 视频主键（标准 UUID），等于 Video 响应字段 `video_id`
+          examples:
+          - 516436ac-ac25-46cf-b19e-c92e1ae0e13a
+          title: Video Id
+        description: 视频主键（标准 UUID），等于 Video 响应字段 `video_id`
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - 源片与视频
+      summary: 删除视频
+      description: 删除视频记录及关联本地产物。
+      operationId: delete_video_api_v1_videos__video_id__delete
+      parameters:
+      - name: video_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 视频主键（标准 UUID），等于 Video 响应字段 `video_id`
+          examples:
+          - 516436ac-ac25-46cf-b19e-c92e1ae0e13a
+          title: Video Id
+        description: 视频主键（标准 UUID），等于 Video 响应字段 `video_id`
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkEnvelope'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/videos/{video_id}/jobs:
+    get:
+      tags:
+      - 源片与视频
+      summary: 列出该视频的切片任务
+      description: 按 **`video_id`** 查其下全部 Job（手动 + 自动，新→旧）。单条形状与 `GET /jobs/{job_id}`
+        相同（含 segments）。
+      operationId: list_video_jobs_api_v1_videos__video_id__jobs_get
+      parameters:
+      - name: video_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 视频主键（标准 UUID），等于 Video 响应字段 `video_id`
+          examples:
+          - 516436ac-ac25-46cf-b19e-c92e1ae0e13a
+          title: Video Id
+        description: 视频主键（标准 UUID），等于 Video 响应字段 `video_id`
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/manual:
+    post:
+      tags:
+      - 手动切片
+      summary: 创建并切割（手动）
+      description: '须先 `POST /videos/import` 并轮询至 `ready`。body：`video_id` + `segments`（必填）。
+
+        返回瘦身 `{job_id, video_id, mode, status}`；随后 `GET /jobs/{job_id}` 轮询至 `done`。
+
+        重切：再次调用本接口建新 Job（不使用 `/cut`）。'
+      operationId: create_manual_job_api_v1_jobs_manual_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateManualJobRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSubmittedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/auto:
+    post:
+      tags:
+      - 自动分镜
+      summary: 创建并检测（自动）
+      description: '须先 import 至 `ready`。建档并**立即入队分镜检测**，完成后停在 `preview`。
+
+        返回瘦身提交结果；下一步：轮询至 preview → `POST /jobs/{job_id}/cut`。
+
+        检测失败请再次调用本接口建新 Job。'
+      operationId: create_auto_job_api_v1_jobs_auto_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAutoJobRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSubmittedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/{job_id}:
+    get:
+      tags:
+      - 手动切片
+      - 自动分镜
+      summary: 查询任务状态
+      description: 轮询进度与 `segments`。`status=done` 时带对象列表动作 `publish_action`（POST）。
+      operationId: get_job_api_v1_jobs__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 任务主键（标准 UUID），等于 Job 响应字段 `job_id`
+          examples:
+          - 516436ac-ac25-46cf-b19e-c92e1ae0e13a
+          title: Job Id
+        description: 任务主键（标准 UUID），等于 Job 响应字段 `job_id`
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/{job_id}/cut:
+    post:
+      tags:
+      - 自动分镜
+      summary: 启动切割（仅自动）
+      description: '仅 **自动** Job：须已 `preview`；`segments` 可省略（用当前分镜）。
+
+        失败或完成后可再 cut 重切。
+
+        **手动切片** 不支持本接口：请再次 `POST /jobs/manual` 建新 Job。'
+      operationId: cut_job_api_v1_jobs__job_id__cut_post
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 任务主键（标准 UUID），等于 Job 响应字段 `job_id`
+          examples:
+          - 516436ac-ac25-46cf-b19e-c92e1ae0e13a
+          title: Job Id
+        description: 任务主键（标准 UUID），等于 Job 响应字段 `job_id`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/CutJobRequest'
+              - type: 'null'
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSubmittedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/{job_id}/publish:
+    post:
+      tags:
+      - 手动切片
+      - 自动分镜
+      summary: 返回切片 OSS 对象列表
+      description: 不执行媒资库复制或保存；segment_ids 省略或空=全部切片，返回 all / selected 两组 oss_key / oss_url。
+      operationId: publish_job_api_v1_jobs__job_id__publish_post
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 任务主键（标准 UUID），等于 Job 响应字段 `job_id`
+          examples:
+          - 516436ac-ac25-46cf-b19e-c92e1ae0e13a
+          title: Job Id
+        description: 任务主键（标准 UUID），等于 Job 响应字段 `job_id`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/PublishRequest'
+              - type: 'null'
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishEnvelope'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /:
+    get:
+      tags:
+      - 系统
+      summary: 服务信息
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInfoResponse'
+components:
+  schemas:
+    ApiAction:
+      properties:
+        method:
+          type: string
+          const: POST
+          title: Method
+          description: HTTP 方法
+          default: POST
+        href:
+          type: string
+          title: Href
+          description: 绝对或相对路径，如 /api/v1/jobs/{job_id}/publish
+      type: object
+      required:
+      - href
+      title: ApiAction
+      description: 需用指定 HTTP 方法调用的动作链接（勿当 GET 资源）。
+    CreateAutoJobRequest:
+      properties:
+        video_id:
+          type: string
+          title: Video Id
+          description: 已导入且 status=ready 的视频主键（= Video.`video_id`）
+        detector:
+          type: string
+          title: Detector
+          description: 检测算法：content / adaptive / semantic
+          default: content
+        threshold:
+          type: number
+          title: Threshold
+          description: content/adaptive 差异阈值；semantic 请用 sample_fps
+          default: 35.0
+        min_scene_len:
+          type: number
+          title: Min Scene Len
+          description: 最短场景时长（秒）
+          default: 2.0
+        sample_fps:
+          anyOf:
+          - type: number
+            maximum: 5.0
+            minimum: 0.2
+          - type: 'null'
+          title: Sample Fps
+          description: 仅 detector=semantic 时生效的抽帧密度（fps）
+      type: object
+      required:
+      - video_id
+      title: CreateAutoJobRequest
+      description: 创建自动分镜任务：建档并立即入队检测（停在 preview，须再 /cut）。须先 import 至 ready。
+    CreateManualJobRequest:
+      properties:
+        video_id:
+          type: string
+          title: Video Id
+          description: 已导入且 status=ready 的视频主键（= Video.`video_id`）
+        segments:
+          items:
+            $ref: '#/components/schemas/SegmentInput'
+          type: array
+          minItems: 1
+          title: Segments
+          description: 切割区间列表（秒）
+      type: object
+      required:
+      - video_id
+      - segments
+      title: CreateManualJobRequest
+      description: 创建手动切片任务：建档并立即入队切割。须先 import 至 ready。
+    CutJobRequest:
+      properties:
+        segments:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SegmentInput'
+            type: array
+          - type: 'null'
+          title: Segments
+          description: 切割区间；省略则用当前 preview 分镜
+      type: object
+      title: CutJobRequest
+      description: 启动切割（仅自动 Job）。preview 后可省略 segments。
+    HTTPValidationError:
+      description: 业务统一错误体（含 422）
+      properties:
+        code:
+          type: integer
+          description: 业务错误码，校验失败多为 42201
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+          description: 含 request_id；detail 为校验细节
+      type: object
+      required:
+      - code
+      - message
+      title: HTTPValidationError
+    HealthChecks:
+      properties:
+        ffmpeg:
+          additionalProperties: true
+          type: object
+          description: '{ok: bool}'
+        ffprobe:
+          additionalProperties: true
+          type: object
+          description: '{ok: bool}'
+        oss:
+          additionalProperties: true
+          type: object
+          description: '{ok: bool}；含 bucket 探测'
+        store:
+          additionalProperties: true
+          type: object
+          description: '{ok, backend=memory, videos, tasks, segments}'
+        scheduler:
+          additionalProperties: true
+          type: object
+          description: '{ok, mode=inline, running, max_jobs}'
+      type: object
+      required:
+      - ffmpeg
+      - ffprobe
+      - oss
+      - store
+      - scheduler
+      title: HealthChecks
+    HealthData:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+          description: 依赖是否全部可用
+        checks:
+          $ref: '#/components/schemas/HealthChecks'
+      type: object
+      required:
+      - ok
+      - checks
+      title: HealthData
+    HealthResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/HealthData'
+      type: object
+      required:
+      - data
+      title: HealthResponse
+    ImportSubmitted:
+      properties:
+        video_id:
+          type: string
+          title: Video Id
+          description: 视频主键（标准 UUID）
+        status:
+          $ref: '#/components/schemas/VideoStatus'
+          description: 初始多为 importing
+        oss_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Key
+          description: 实际源片 OSS 键；URL 导入时为服务受管 ingest 对象
+        source_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Url
+          description: 源片 http(s) URL（url 导入时）
+      type: object
+      required:
+      - video_id
+      - status
+      title: ImportSubmitted
+      description: 异步导入提交结果；完整 Video 请轮询 GET /videos/{video_id}。
+    ImportSubmittedResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/ImportSubmitted'
+      type: object
+      required:
+      - data
+      title: ImportSubmittedResponse
+    Job:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+          description: 任务主键；路径 /jobs/{job_id} 填此值（标准 UUID）
+        video_id:
+          type: string
+          title: Video Id
+          description: 关联视频外键（= Video.`video_id`）。拉预览：GET /videos/{video_id}
+        mode:
+          $ref: '#/components/schemas/JobMode'
+          description: 模式：manual / auto
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        progress:
+          type: number
+          title: Progress
+          description: 进度 0~100
+          default: 0.0
+        message:
+          type: string
+          title: Message
+          description: 状态说明
+          default: ''
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: 创建时间
+        segments:
+          items:
+            $ref: '#/components/schemas/Segment'
+          type: array
+          title: Segments
+          description: 片段/分镜列表（preview 及之后阶段有内容；轮询本字段即可）
+        publish_action:
+          anyOf:
+          - $ref: '#/components/schemas/ApiAction'
+          - type: 'null'
+          description: 返回切片 OSS 对象列表动作（status=done；必须 POST）
+      type: object
+      required:
+      - job_id
+      - video_id
+      - mode
+      - status
+      - created_at
+      title: Job
+      description: 切片任务（轮询完整对象）
+    JobListResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          items:
+            $ref: '#/components/schemas/Job'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: JobListResponse
+    JobMode:
+      type: string
+      enum:
+      - manual
+      - auto
+      title: JobMode
+      description: 任务模式
+    JobResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - data
+      title: JobResponse
+    JobStatus:
+      type: string
+      enum:
+      - pending
+      - detecting
+      - preview
+      - processing
+      - done
+      - failed
+      title: JobStatus
+      description: 任务状态
+    JobSubmitted:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+          description: 任务主键（标准 UUID）
+        video_id:
+          type: string
+          title: Video Id
+          description: 关联视频外键
+        mode:
+          $ref: '#/components/schemas/JobMode'
+          description: 模式：manual / auto
+        status:
+          $ref: '#/components/schemas/JobStatus'
+          description: 初始状态，通常为 pending / processing
+      type: object
+      required:
+      - job_id
+      - video_id
+      - mode
+      - status
+      title: JobSubmitted
+      description: 异步提交结果（manual/auto/cut）；完整 Job 请轮询 GET /jobs/{job_id}。
+    JobSubmittedResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/JobSubmitted'
+      type: object
+      required:
+      - data
+      title: JobSubmittedResponse
+    OkEnvelope:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/OkResponse'
+      type: object
+      required:
+      - data
+      title: OkEnvelope
+    OkResponse:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+          description: 是否成功
+          default: true
+      type: object
+      title: OkResponse
+      description: 通用成功响应
+    OssImportRequest:
+      properties:
+        oss_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Key
+          description: OSS 对象键，例如 path/to/video.mp4
+        oss_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Url
+          description: 任意可访问的 http(s) URL（与 oss_key 二选一）；不要求与 OSS_BUCKET
+            一致，服务端做 SSRF 校验后流式转存 OSS；别名 url
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+          description: oss_url 的别名
+      type: object
+      title: OssImportRequest
+      description: 导入源片：oss_key（配置桶）与 url/oss_url（任意 http(s)）二选一。
+    PublishEnvelope:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/PublishResponse'
+      type: object
+      required:
+      - data
+      title: PublishEnvelope
+    PublishRequest:
+      properties:
+        segment_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Segment Ids
+          description: 要返回的片段 ID；省略或空表示全部切片
+        oss_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Key
+          description: 兼容旧客户端的目标目录字段；当前忽略，不执行复制或保存
+      type: object
+      title: PublishRequest
+      description: 返回全部及选中切片的 OSS 对象列表；不执行复制或保存。
+    PublishResponse:
+      properties:
+        all:
+          items:
+            $ref: '#/components/schemas/PublishedSegmentItem'
+          type: array
+          title: All
+          description: 全部预存切片对象
+        selected:
+          items:
+            $ref: '#/components/schemas/PublishedSegmentItem'
+          type: array
+          title: Selected
+          description: 前端选择的切片对象
+      type: object
+      title: PublishResponse
+      description: 全部切片与前端选中切片的 OSS 对象列表
+    PublishedSegmentItem:
+      properties:
+        segment_id:
+          type: string
+          title: Segment Id
+          description: 片段主键（= Segment.`segment_id`）
+        index:
+          type: integer
+          title: Index
+          description: 序号
+        oss_key:
+          type: string
+          title: Oss Key
+          description: 预存切片 OSS 键
+        oss_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Url
+          description: 预存切片访问 URL
+      type: object
+      required:
+      - segment_id
+      - index
+      - oss_key
+      title: PublishedSegmentItem
+      description: 切片 OSS 对象引用
+    Segment:
+      properties:
+        segment_id:
+          type: string
+          title: Segment Id
+          description: 片段主键；路径 /segments/{segment_id} 填此值
+        job_id:
+          type: string
+          title: Job Id
+          description: 所属任务外键（= Job.`job_id`）
+        index:
+          type: integer
+          title: Index
+          description: 序号
+        start_time:
+          type: number
+          title: Start Time
+          description: 起始秒
+        end_time:
+          type: number
+          title: End Time
+          description: 结束秒
+        start_frame:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Start Frame
+          description: 起始帧（服务端按秒换算回传）
+        end_frame:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: End Frame
+          description: 结束帧（服务端按秒换算回传）
+        oss_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Key
+          description: 预存切片 OSS 键（切割完成后即有）
+        oss_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Url
+          description: 预存切片可访问 URL
+        download_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Download Url
+          description: 下载地址；切割完成且有 OSS 对象后可用
+        preview_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Preview Url
+          description: 预览地址
+        thumb_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Thumb Url
+          description: 封面地址
+        download_filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Download Filename
+          description: 建议下载文件名
+        source:
+          $ref: '#/components/schemas/SegmentSource'
+          description: 来源：manual / auto
+        confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Confidence
+          description: 检测侧内部分数；auto 常有（content/adaptive 多为 1.0/0.5），manual 为 null
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+          description: 仅 detector=semantic 时可能有模型简述；其余为 null
+        status:
+          type: string
+          title: Status
+          description: pending | preview | done | failed（无 ready）
+          default: pending
+      type: object
+      required:
+      - segment_id
+      - job_id
+      - index
+      - start_time
+      - end_time
+      - source
+      title: Segment
+      description: 切割 / 分镜片段
+    SegmentInput:
+      properties:
+        start:
+          type: number
+          minimum: 0.0
+          title: Start
+          description: 起始时间（秒）
+        end:
+          type: number
+          exclusiveMinimum: 0.0
+          title: End
+          description: 结束时间（秒）
+      type: object
+      required:
+      - start
+      - end
+      title: SegmentInput
+      description: 时间轴区间（秒）。切割以 start/end 为准；帧号由服务端换算，请求侧不传。
+    SegmentSource:
+      type: string
+      enum:
+      - manual
+      - auto
+      title: SegmentSource
+      description: 片段来源
+    ServiceInfo:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: 服务名称
+        version:
+          type: string
+          title: Version
+          description: 版本
+        docs:
+          type: string
+          title: Docs
+          description: Swagger 路径
+        api_prefix:
+          type: string
+          title: Api Prefix
+          description: 接口前缀
+      type: object
+      required:
+      - name
+      - version
+      - docs
+      - api_prefix
+      title: ServiceInfo
+    ServiceInfoResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/ServiceInfo'
+      type: object
+      required:
+      - data
+      title: ServiceInfoResponse
+    SkippedSegmentItem:
+      properties:
+        segment_id:
+          type: string
+          title: Segment Id
+          description: 片段主键（= Segment.`segment_id`）
+        reason:
+          type: string
+          title: Reason
+          description: 跳过原因
+      type: object
+      required:
+      - segment_id
+      - reason
+      title: SkippedSegmentItem
+      description: 跳过发布的片段
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Video:
+      properties:
+        video_id:
+          type: string
+          title: Video Id
+          description: 视频主键。路径 /videos/{video_id}、建 Job 的 body.video_id 都填此值
+        status:
+          $ref: '#/components/schemas/VideoStatus'
+          description: 导入状态：importing | ready | failed
+        progress:
+          type: number
+          title: Progress
+          description: 导入进度 0~100
+          default: 0.0
+        message:
+          type: string
+          title: Message
+          description: 状态说明
+          default: ''
+        filename:
+          type: string
+          title: Filename
+          description: 文件名
+        duration:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Duration
+          description: 时长（秒）；importing 时可为 null
+        width:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Width
+          description: 宽度；importing 时可为 null
+        height:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height
+          description: 高度；importing 时可为 null
+        fps:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Fps
+          description: 帧率；importing 时可为 null
+        codec:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Codec
+          description: 编码；importing 时可为 null
+        size_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size Bytes
+          description: 文件大小（字节）；importing 时可为 null
+        preview_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Preview Url
+          description: 源片预览 URL（ready 后）；媒体接口优先 CDN，CDN 不可用时 302 到 OSS 签名 URL
+        filmstrip_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filmstrip Url
+          description: 胶片条绝对 URL；ready 后可用
+        waveform:
+          anyOf:
+          - $ref: '#/components/schemas/WaveformData'
+          - type: 'null'
+          description: 波形峰值；ready 且有音轨时有值
+        has_audio:
+          type: boolean
+          title: Has Audio
+          description: 是否含音轨
+          default: false
+        oss_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Key
+          description: 实际源片 OSS 键；URL 导入时为服务受管 ingest 对象
+        source_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Url
+          description: 源片 http(s) URL（url 导入时）
+      type: object
+      required:
+      - video_id
+      - status
+      - filename
+      title: Video
+      description: 视频资源（GET 轮询；ready 时字段齐全）。
+    VideoResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          default: 0
+        message:
+          type: string
+          title: Message
+          default: ok
+        data:
+          $ref: '#/components/schemas/Video'
+      type: object
+      required:
+      - data
+      title: VideoResponse
+    VideoStatus:
+      type: string
+      enum:
+      - importing
+      - ready
+      - failed
+      title: VideoStatus
+      description: 源片导入状态
+    WaveformData:
+      properties:
+        bins:
+          type: integer
+          title: Bins
+          description: 峰值点数
+        peaks:
+          items:
+            type: number
+          type: array
+          title: Peaks
+          description: 峰值 0~1
+        has_audio:
+          type: boolean
+          title: Has Audio
+          description: 是否含有效音轨
+      type: object
+      required:
+      - bins
+      - peaks
+      - has_audio
+      title: WaveformData
+      description: 音频波形峰值（随视频信息一并返回）。
+tags:
+- name: 系统
+  description: 健康检查与服务信息
+- name: 源片与视频
+  description: 异步导入源片、视频信息，以及该视频下的 Job 列表
+- name: 手动切片
+  description: '`POST /jobs/manual`（建档并切割）→ 轮询 → publish；重切请再次 `POST /jobs/manual`
+    建新 Job'
+- name: 自动分镜
+  description: '`POST /jobs/auto`（建档并检测）→ preview → `POST .../cut` → 轮询 → publish'

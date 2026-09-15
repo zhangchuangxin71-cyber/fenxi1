@@ -1,0 +1,4 @@
+brand,product,visibility,rank,sentiment,source
+示例品牌,企业知识库平台,yes,2,positive,AI回答A
+竞品A,内容营销平台,yes,1,neutral,AI回答A
+示例品牌,事实核验模块,yes,3,positive,AI回答B

@@ -1,0 +1,20 @@
+{
+  "graphs": {
+    "wechat_article": "/deps/wechat-article-agent/app/graph/builder.py:graph",
+    "contract_probe": "/deps/wechat-article-agent/app/graph/contract_probe.py:graph"
+  },
+  "checkpointer": {
+    "path": "/deps/wechat-article-agent/app/persistence/checkpointer.py:create_checkpointer",
+    "ttl": {
+      "strategy": "delete",
+      "default_ttl": 4320,
+      "sweep_interval_minutes": 5,
+      "sweep_limit": 100
+    },
+    "serde": {
+      "pickle_fallback": false,
+      "allowed_json_modules": null,
+      "allowed_msgpack_modules": null
+    }
+  }
+}

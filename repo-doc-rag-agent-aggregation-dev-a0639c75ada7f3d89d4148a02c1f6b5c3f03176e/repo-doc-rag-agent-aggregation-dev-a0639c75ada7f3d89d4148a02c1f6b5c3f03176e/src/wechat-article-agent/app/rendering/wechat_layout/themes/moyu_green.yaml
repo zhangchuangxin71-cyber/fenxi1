@@ -1,0 +1,9 @@
+id: moyu-green
+version: "1"
+label: 摸鱼绿
+source: "gzh-design@ba1f417 theme-moyu-green adapted with permission"
+suitable_for: [教程, 测评, 清单, 工具盘点]
+colors: {text: "#374151", heading: "#111827", muted: "#6B7280", primary: "#059669", secondary: "#10B981", accent: "#FDE68A", background: "#FFFFFF", surface: "#ECFDF5", border: "#BBF7D0", code_background: "#F3F4F6"}
+typography: {body_size: "14px", body_line_height: "1.9", h1_size: "24px", h2_size: "17px", h3_size: "15px", caption_size: "11px", letter_spacing: "0.5px"}
+spacing: {content_padding: "0 20px", paragraph_margin: "0 0 16px", section_margin: "48px 0 24px"}
+variants: {profile: moyu_green, blockquote: card, list: card, code: light}

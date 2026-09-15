@@ -1,0 +1,48 @@
+# 用法：
+#   cp .env.example .env   # 填写 OSS_* / 可选 ARK_*
+#   ./start.sh build       # 有网络时构建 video-clip-api:latest（注入 git_sha）
+#   ./start.sh             # 有镜像则直接起（不强制 --build）
+#   ./start.sh redeploy    # 代码更新后：build + 强制重建
+#   ./start.sh verify      # 对比 health.git_sha 与本地 git
+#   curl http://127.0.0.1:8010/api/v1/health
+#
+# 单 API 进程：内存账本 + 同进程后台任务（无 Postgres / Redis / Celery）。
+# 业务配置经 env_file: .env 注入；FFMPEG_* 在下方覆盖为容器内路径。
+# 推荐离线交付：docker save video-clip-api:latest -o video-clip-api.tar
+
+services:
+  api:
+    container_name: video-clip-api
+    image: ${IMAGE:-video-clip-api:latest}
+    build:
+      context: .
+      args:
+        APP_GIT_SHA: ${APP_GIT_SHA:-unknown}
+        APP_BUILD_TIME: ${APP_BUILD_TIME:-unknown}
+    init: true
+    stop_grace_period: 90s
+    ports:
+      - "${API_PORT:-8010}:8010"
+    env_file:
+      - .env
+    environment:
+      # 覆盖宿主机路径，强制使用镜像内 ffmpeg
+      FFMPEG_BIN: /usr/bin/ffmpeg
+      FFPROBE_BIN: /usr/bin/ffprobe
+      # 注意：不要在这里覆盖 APP_GIT_SHA / APP_BUILD_TIME
+      # 这两项只在 build args 写入镜像，避免 up 不 rebuild 时 env 显示新 SHA、代码仍是旧的
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/v1/health', timeout=8)",
+        ]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped

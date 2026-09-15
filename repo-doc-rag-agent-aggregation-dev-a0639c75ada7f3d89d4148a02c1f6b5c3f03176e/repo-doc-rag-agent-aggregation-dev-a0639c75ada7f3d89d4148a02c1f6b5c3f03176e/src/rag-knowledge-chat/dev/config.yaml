@@ -1,0 +1,9 @@
+# Local development-panel backend only. Replace with the deployed URL when needed.
+chat_base_url: "http://127.0.0.1:8230"
+# chat_base_url: "http://39.108.184.150:8130"
+
+# Leave empty while knowledge-chat inbound authentication is disabled.
+api_key: ""
+
+# Required when testing deployed knowledge-chat.
+oss_key_prefix: "prod/doc-ingestion/minerU/新建文件夹"

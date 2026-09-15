@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 环境变量与密钥（重要！）
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+config/secret*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 数据文件（大文件不应放 Git）
+*.csv
+*.xlsx
+*.pdf
+*.docx
+app/光明区光明街道旅游手册.md
+app/data/Travel Assiatant.md
+data/
+uploads/
+output/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 日志与缓存
+*.log
+logs/
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+# 机器学习
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.pkl
+/models/
+checkpoints/
+data/raw/
+data/processed/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 构建产物
+dist/
+build/

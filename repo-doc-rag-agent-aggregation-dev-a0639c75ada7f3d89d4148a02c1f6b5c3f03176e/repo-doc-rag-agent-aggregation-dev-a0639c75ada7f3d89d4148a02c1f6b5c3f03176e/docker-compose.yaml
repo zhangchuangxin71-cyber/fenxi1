@@ -1,0 +1,241 @@
+name: rag-platform
+
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
+services:
+  mineru-api:
+    build:
+      context: ./src/MinerU
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_BOOKWORM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim-bookworm}
+        DEBIAN_MIRROR: ${RAG_BUILD_DEBIAN_MIRROR:-https://mirrors.aliyun.com/debian}
+        DEBIAN_SECURITY_MIRROR: ${RAG_BUILD_DEBIAN_SECURITY_MIRROR:-https://mirrors.aliyun.com/debian-security}
+        PIP_INDEX_URL: ${RAG_BUILD_PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        PIP_EXTRA_INDEX_URL: ${RAG_BUILD_PIP_EXTRA_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
+        PYTORCH_INDEX_URL: ${RAG_BUILD_PYTORCH_INDEX_URL:-https://mirrors.tuna.tsinghua.edu.cn/pytorch-wheels/cpu}
+    env_file:
+      - ./env/mineru.env
+    environment:
+      HF_HOME: /data/models/huggingface
+      MINERU_TOOLS_CONFIG_JSON: /data/models/mineru.json
+      MODELSCOPE_CACHE: /data/models/modelscope
+    ports:
+      - "8135:8135"
+    command: ["mineru-api", "--host", "0.0.0.0", "--port", "8135"]
+    shm_size: "8gb"
+    volumes:
+      - /mnt/data/mineru/models:/data/models
+      - /mnt/data/mineru/output:/data/output
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:8135/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    networks:
+      - rag-platform-network
+    restart: unless-stopped
+    logging: *default-logging
+
+  repo-doc-ingestion:
+    build:
+      context: ./src/repo-doc-ingestion
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim}
+        DEBIAN_MIRROR: ${RAG_BUILD_DEBIAN_MIRROR:-https://mirrors.aliyun.com/debian}
+        DEBIAN_SECURITY_MIRROR: ${RAG_BUILD_DEBIAN_SECURITY_MIRROR:-https://mirrors.aliyun.com/debian-security}
+        PIP_INDEX_URL: ${RAG_BUILD_PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        PIP_TRUSTED_HOST: ${RAG_BUILD_PIP_TRUSTED_HOST:-pypi.tuna.tsinghua.edu.cn}
+    env_file:
+      - ./env/ingestion.env
+    environment:
+      PORT: "8100"
+    ports:
+      - "8100:8100"
+    volumes:
+      - /mnt/data/ingestion/workspace:/app/app/workspace
+      - /mnt/data/logs/ingestion:/app/logs
+    depends_on:
+      mineru-api:
+        condition: service_healthy
+    networks:
+      - rag-platform-network
+      - pageindex
+    restart: unless-stopped
+    logging: *default-logging
+
+  rag-retrieval-service:
+    build:
+      context: ./src/rag-retrieval-service
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim}
+        UV_DEFAULT_INDEX: ${RAG_BUILD_UV_DEFAULT_INDEX:-https://pypi.tuna.tsinghua.edu.cn/simple}
+    env_file:
+      - ./env/retrieval.env
+    environment:
+      PORT: "8120"
+    ports:
+      - "8120:8120"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8120/readyz', timeout=3).read()\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+    networks:
+      - rag-platform-network
+      - pageindex
+    restart: unless-stopped
+    logging: *default-logging
+
+  rag-knowledge-chat:
+    build:
+      context: ./src/rag-knowledge-chat
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim}
+        UV_DEFAULT_INDEX: ${RAG_BUILD_UV_DEFAULT_INDEX:-https://pypi.tuna.tsinghua.edu.cn/simple}
+    env_file:
+      - ./env/knowledge-chat.env
+    environment:
+      PORT: "8130"
+    ports:
+      - "8130:8130"
+    depends_on:
+      rag-retrieval-service:
+        condition: service_healthy
+    networks:
+      - rag-platform-network
+      - pageindex
+    restart: unless-stopped
+    logging: *default-logging
+
+  rag-report-agent:
+    build:
+      context: ./src/rag-report-agent
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim}
+        DEBIAN_MIRROR: ${RAG_BUILD_DEBIAN_MIRROR:-https://mirrors.aliyun.com/debian}
+        DEBIAN_SECURITY_MIRROR: ${RAG_BUILD_DEBIAN_SECURITY_MIRROR:-https://mirrors.aliyun.com/debian-security}
+        PIP_INDEX_URL: ${RAG_BUILD_PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        PIP_TRUSTED_HOST: ${RAG_BUILD_PIP_TRUSTED_HOST:-pypi.tuna.tsinghua.edu.cn}
+    env_file:
+      - ./env/report-agent.env
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8115"
+    ports:
+      - "8115:8115"
+    volumes:
+      - /mnt/data/logs/report-agent:/app/logs
+    depends_on:
+      rag-retrieval-service:
+        condition: service_healthy
+    networks:
+      - rag-platform-network
+      - pageindex
+    restart: unless-stopped
+    logging: *default-logging
+
+  wechat-article-db-init:
+    build:
+      context: ./src/wechat-article-agent
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_BOOKWORM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim-bookworm}
+        UV_DEFAULT_INDEX: ${RAG_BUILD_UV_DEFAULT_INDEX:-https://pypi.tuna.tsinghua.edu.cn/simple}
+    env_file:
+      - ./env/wechat-article.env
+      - ./env/wechat-article-db.env
+    command: ["python", "-m", "app.persistence.bootstrap"]
+    networks:
+      - pageindex
+    restart: "no"
+    logging: *default-logging
+
+  wechat-article-runtime:
+    build:
+      context: ./src/wechat-article-agent
+      dockerfile: Runtime.Dockerfile
+      args:
+        LANGGRAPH_API_BASE_IMAGE: ${RAG_BUILD_LANGGRAPH_API_IMAGE:-langchain/langgraph-api:0.12.3-py3.12-bookworm}
+        PYPI_MIRROR_BASE: ${RAG_BUILD_PYPI_MIRROR_BASE:-https://pypi.tuna.tsinghua.edu.cn}
+    env_file:
+      - ./env/wechat-article.env
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8141"
+      PORT: "8141"
+    expose:
+      - "8141"
+    volumes:
+      - wechat-article-runtime-data:/runtime-data/.langgraph_api
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8141/ok', timeout=4).read()\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+    depends_on:
+      wechat-article-db-init:
+        condition: service_completed_successfully
+    networks:
+      - rag-platform-network
+      - pageindex
+    restart: unless-stopped
+    logging: *default-logging
+
+  wechat-article-agent:
+    build:
+      context: ./src/wechat-article-agent
+      dockerfile: Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${RAG_BUILD_PYTHON_SLIM_BOOKWORM_IMAGE:-docker.m.daocloud.io/library/python:3.12-slim-bookworm}
+        UV_DEFAULT_INDEX: ${RAG_BUILD_UV_DEFAULT_INDEX:-https://pypi.tuna.tsinghua.edu.cn/simple}
+    env_file:
+      - ./env/wechat-article.env
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8140"
+      AGENT_SERVER_URL: "http://wechat-article-runtime:8141"
+      RETRIEVAL_BASE_URL: "http://rag-retrieval-service:8120"
+    ports:
+      - "8140:8140"
+    depends_on:
+      wechat-article-db-init:
+        condition: service_completed_successfully
+      wechat-article-runtime:
+        condition: service_healthy
+      rag-retrieval-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8140/health/ready', timeout=4).read()\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+    networks:
+      - rag-platform-network
+      - pageindex
+    restart: unless-stopped
+    logging: *default-logging
+
+networks:
+  rag-platform-network:
+    name: rag-platform-network
+    driver: bridge
+  
+  pageindex:
+    external: true
+    name: pageindex
+
+volumes:
+  wechat-article-runtime-data:

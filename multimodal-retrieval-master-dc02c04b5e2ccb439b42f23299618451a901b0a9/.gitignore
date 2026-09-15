@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.python-version
+.venv/
+venv/
+env/
+ENV/
+
+# Secrets（仅提交模板）
+.env
+.env.*
+!.env.example
+
+# IDE / 工具
+.vscode/
+.idea/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# 日志与运行时（仅保留目录占位）
+runtime/**
+!runtime/tmp/
+!runtime/tmp/.gitkeep
+!runtime/logs/
+!runtime/logs/.gitkeep
+
+# Docker / Milvus 本地数据
+volumes/
+*.db
+*.db-journal
+
+# 模型权重（部署时下载，见 models/README.md）
+models/**/*.bin
+models/**/*.safetensors
+models/**/*.pt
+models/**/.mv
+models/**/.msc
+model/.msc
+model/.mv
+model/*.pt
+model/*.bin
+
+# 本地检索产物
+picture/profiles/
+video_retrieval/models/
+video_retrieval/profiles/
+video_retrieval/legacy/
+video_retrieval/artifacts/
+video_retrieval/videos/
+video_retrieval/hybrid/output/
+
+# 数据集与大文件
+data/
+muge_sample/
+validation_sets/
+validation_sets_test/
+4月份媒资库素材1/
+checkpoints/
+checkpoints_hardneg/
+checkpoints_hardneg_v2/
+eval_results/
+cleaned_muge_sample.jsonl
+cleaned_muge_with_negatives.jsonl
+
+# 向量 / 二进制产物
+*.ckpt
+*.faiss
+*.npy
+*.npz
+**/doubao_video_captions.jsonl
+**/doubao_video_captions_by_video.json
+
+# 打包产物
+dist/
+*.tar.gz
+*.zip
+embedding-service.tar.gz
+
+# 发布目录（由 scripts/package_for_upload.sh 生成）
+release/
+
+# 编辑器 / 规范
+.editorconfig

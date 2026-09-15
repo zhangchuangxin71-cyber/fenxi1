@@ -1,0 +1,42 @@
+[project]
+name = "chinese-clip"
+version = "0.3.0"
+description = "Chinese multimodal retrieval toolkit"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["embed_core", "embedding_service", "video_retrieval", "picture", "tests", "scripts"]
+
+[tool.ruff.lint.per-file-ignores]
+# Re-exported symbols for `from .config import ...` compatibility
+"video_retrieval/hybrid/config.py" = ["F401"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",   # line length (formatter handles wrapping)
+    "B008",   # function call in default arg (FastAPI/pydantic patterns)
+    "SIM108", # ternary sometimes less readable in pipelines
+    "SIM113", # manual progress counters in concurrent loops
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["embed_core", "embedding_service", "video_retrieval", "picture"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true

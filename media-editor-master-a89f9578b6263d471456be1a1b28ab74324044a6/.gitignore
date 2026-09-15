@@ -1,0 +1,155 @@
+# =============================================================================
+# Secrets — never commit
+# =============================================================================
+.env
+.env.*
+!.env.example
+
+# =============================================================================
+# Python
+# =============================================================================
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# =============================================================================
+# IDE / OS
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# =============================================================================
+# Runtime outputs (regenerated per run)
+# =============================================================================
+/audio/
+temp/
+clip/
+cache/
+source_media/
+workflow_demo/
+
+output/
+output.mp4
+no_sub.mp4
+subtitle.srt
+subtitle.ass
+filelist.txt
+segment_timeline.json
+media_choices.json
+clip_offsets.json
+
+*.log
+app.log
+
+# =============================================================================
+# Large data & indexes (rebuild locally; see README)
+# =============================================================================
+data/images/
+data/videos/
+data/indexes/
+data/logs/
+data/audio/
+
+# Keep data directory structure if needed (optional empty dirs are not tracked by git)
+
+# =============================================================================
+# vendor/chinese-clip — code tracked, weights & runtime ignored
+# =============================================================================
+vendor/chinese-clip/.env
+vendor/chinese-clip/.env.*
+vendor/chinese-clip/models/
+vendor/chinese-clip/runtime/
+vendor/chinese-clip/**/profiles/
+vendor/chinese-clip/**/artifacts/
+vendor/chinese-clip/**/*.faiss
+vendor/chinese-clip/**/*.ckpt
+vendor/chinese-clip/**/*.safetensors
+vendor/chinese-clip/**/*.pt
+vendor/chinese-clip/**/*.bin
+vendor/chinese-clip/**/*.npy
+vendor/chinese-clip/**/*.npz
+
+# =============================================================================
+# Legacy backup folder (if present at repo root)
+# =============================================================================
+chinese-clip-main*/
+
+# =============================================================================
+# Misc binaries / temp media at repo root
+# =============================================================================
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
+!fonts/
+
+# =============================================================================
+# Flow B API runtime (local workspaces & logs)
+# =============================================================================
+workspaces/
+logs/
+jobs/
+jobs_isolated_jpg_test/
+flow-b-api-test/
+
+# =============================================================================
+# Tests — local only, except focused production regressions
+# =============================================================================
+tests/*
+!tests/test_compose_ass_oss.py
+test_output/
+docs/api-flow-b-test-report.md
+docs/flow_b_api_test_report.md
+docs/flow_b_api_test_report.json
+docs/api-flow-b-fastapi-test-*.json
+docs/demo_*_report.json
+docs/demo_*.json
+docs/merged_subtitle_display_test/
+docs/preview_*_timing_report.json
+
+# Local demo / one-off scripts (not production)
+tools/demos/
+tools/subtitle_limit_compose_test.py
+tools/subtitle_limit_preview_test.py
+tools/font_preview_test.py
+tools/benchmark_ai_prompts.py
+
+# Generated or sample data (large / environment-specific)
+data/
+
+# =============================================================================
+# Manual test / benchmark scripts (local only, not in CodeUp)
+# =============================================================================
+scripts/concurrent_compose_benchmark.py
+scripts/concurrent_stateless_compose.py
+scripts/compose_param_benchmark.py
+scripts/e2e_noodle_compose.py
+scripts/e2e_noodle_compose_stateless.py
+scripts/e2e_real_compose_x2.py
+scripts/e2e_jpg_compose_isolated.py
+scripts/run_isolated_jpg_e2e.sh
+scripts/strict_api_walkthrough.py
+scripts/test_font_fix.py
+api_server_imagevideotext2video*.py

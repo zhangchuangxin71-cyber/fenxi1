@@ -1,0 +1,1139 @@
+openapi: 3.1.0
+info:
+  title: rag-retrieval-service
+  version: 0.1.0
+paths:
+  /healthz:
+    get:
+      summary: Healthz
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /readyz:
+    get:
+      summary: Readyz
+      operationId: readyz_readyz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+  /rag/v1/retrieve:
+    post:
+      summary: Retrieve
+      operationId: retrieve_rag_v1_retrieve_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /rag/v1/documents/meta:
+    post:
+      summary: Documents Meta
+      operationId: documents_meta_rag_v1_documents_meta_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentMetaRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetaResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /rag/v1/documents/raw:
+    post:
+      summary: Documents Raw
+      operationId: documents_raw_rag_v1_documents_raw_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentRawRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/DocumentRawResponse'
+                - $ref: '#/components/schemas/DocumentRawRepairAccepted'
+                title: Response Documents Raw Rag V1 Documents Raw Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /rag/v1/documents/raw/status:
+    get:
+      summary: Documents Raw Status
+      operationId: documents_raw_status_rag_v1_documents_raw_status_get
+      parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 256
+          title: User Id
+      - name: kb_id
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 256
+          title: Kb Id
+      - name: doc_id
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 256
+          title: Doc Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRawStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ChunkDocumentMeta:
+      properties:
+        doc_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Type
+        doc_description:
+          type: string
+          title: Doc Description
+          default: ''
+        page_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Page Count
+        node_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Node Count
+        is_temporary:
+          type: boolean
+          title: Is Temporary
+          default: false
+      additionalProperties: false
+      type: object
+      title: ChunkDocumentMeta
+    CoverageSummary:
+      properties:
+        complete:
+          type: boolean
+          title: Complete
+        truncated:
+          type: boolean
+          title: Truncated
+          default: false
+        truncated_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Truncated By
+        covered_group_refs:
+          items:
+            type: string
+          type: array
+          title: Covered Group Refs
+        uncovered_group_refs:
+          items:
+            type: string
+          type: array
+          title: Uncovered Group Refs
+        degraded_group_refs:
+          items:
+            type: string
+          type: array
+          title: Degraded Group Refs
+      additionalProperties: false
+      type: object
+      required:
+      - complete
+      title: CoverageSummary
+    DocumentMeta:
+      properties:
+        doc_id:
+          type: string
+          title: Doc Id
+        doc_name:
+          type: string
+          title: Doc Name
+        doc_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Type
+        doc_description:
+          type: string
+          title: Doc Description
+          default: ''
+        status:
+          type: string
+          title: Status
+        page_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Page Count
+        node_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Node Count
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+        kb_id:
+          type: string
+          title: Kb Id
+        user_id:
+          type: string
+          title: User Id
+        is_temporary:
+          type: boolean
+          title: Is Temporary
+          default: false
+        bound_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Bound At
+      additionalProperties: false
+      type: object
+      required:
+      - doc_id
+      - doc_name
+      - status
+      - kb_id
+      - user_id
+      title: DocumentMeta
+    DocumentMetaRequest:
+      properties:
+        user_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: User Id
+        kb_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: Kb Id
+        doc_ids:
+          items:
+            type: string
+            maxLength: 256
+            minLength: 1
+          type: array
+          minItems: 1
+          title: Doc Ids
+        include_missing:
+          type: boolean
+          title: Include Missing
+          default: true
+      additionalProperties: false
+      type: object
+      required:
+      - user_id
+      - kb_id
+      - doc_ids
+      title: DocumentMetaRequest
+    DocumentMetaResponse:
+      properties:
+        documents:
+          items:
+            $ref: '#/components/schemas/DocumentMeta'
+          type: array
+          title: Documents
+        missing_doc_ids:
+          items:
+            type: string
+          type: array
+          title: Missing Doc Ids
+      additionalProperties: false
+      type: object
+      required:
+      - documents
+      title: DocumentMetaResponse
+    DocumentRawNode:
+      properties:
+        node_id:
+          type: string
+          title: Node Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        paragraph_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Paragraph Index
+        start_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Start Index
+        end_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: End Index
+        level:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Level
+        nodes:
+          items:
+            $ref: '#/components/schemas/DocumentRawNode'
+          type: array
+          title: Nodes
+      additionalProperties: false
+      type: object
+      required:
+      - node_id
+      title: DocumentRawNode
+    DocumentRawPage:
+      properties:
+        page:
+          type: integer
+          minimum: 1.0
+          title: Page
+        content:
+          type: string
+          title: Content
+          default: ''
+      additionalProperties: false
+      type: object
+      required:
+      - page
+      title: DocumentRawPage
+    DocumentRawRepairAccepted:
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+          title: Schema Version
+          default: '1.0'
+        doc_id:
+          type: string
+          title: Doc Id
+        repair_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Repair Id
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+        status:
+          type: string
+          enum:
+          - queued
+          - processing
+          - completed
+          title: Status
+        status_url:
+          type: string
+          title: Status Url
+        retry_after:
+          type: integer
+          minimum: 1.0
+          title: Retry After
+          default: 2
+      additionalProperties: false
+      type: object
+      required:
+      - doc_id
+      - status
+      - status_url
+      title: DocumentRawRepairAccepted
+    DocumentRawRequest:
+      properties:
+        user_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: User Id
+        kb_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: Kb Id
+        doc_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: Doc Id
+      additionalProperties: false
+      type: object
+      required:
+      - user_id
+      - kb_id
+      - doc_id
+      title: DocumentRawRequest
+    DocumentRawResponse:
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+          title: Schema Version
+          default: '1.0'
+        doc_id:
+          type: string
+          title: Doc Id
+        doc_name:
+          type: string
+          title: Doc Name
+        doc_type:
+          type: string
+          title: Doc Type
+        doc_description:
+          type: string
+          title: Doc Description
+          default: ''
+        status:
+          type: string
+          title: Status
+        page_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Page Count
+        line_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Line Count
+        node_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Node Count
+        is_temporary:
+          type: boolean
+          title: Is Temporary
+          default: false
+        pages:
+          items:
+            $ref: '#/components/schemas/DocumentRawPage'
+          type: array
+          title: Pages
+        structure:
+          items:
+            $ref: '#/components/schemas/DocumentRawNode'
+          type: array
+          title: Structure
+        raw_mineru:
+          $ref: '#/components/schemas/MinerURawResult'
+      additionalProperties: false
+      type: object
+      required:
+      - doc_id
+      - doc_name
+      - doc_type
+      - status
+      - raw_mineru
+      title: DocumentRawResponse
+    DocumentRawStatusResponse:
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+          title: Schema Version
+          default: '1.0'
+        doc_id:
+          type: string
+          title: Doc Id
+        status:
+          type: string
+          enum:
+          - not_started
+          - queued
+          - processing
+          - completed
+          - failed
+          title: Status
+        repair_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Repair Id
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+        retryable:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Retryable
+        error_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Code
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+        next_retry_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Next Retry At
+      additionalProperties: false
+      type: object
+      required:
+      - doc_id
+      - status
+      title: DocumentRawStatusResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+        service:
+          type: string
+          title: Service
+        version:
+          type: string
+          title: Version
+        env:
+          type: string
+          title: Env
+      additionalProperties: false
+      type: object
+      required:
+      - ok
+      - service
+      - version
+      - env
+      title: HealthResponse
+    MinerURawResult:
+      properties:
+        md_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Md Content
+        content_list:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Content List
+        middle_json:
+          additionalProperties: true
+          type: object
+          title: Middle Json
+      additionalProperties: false
+      type: object
+      title: MinerURawResult
+    ReadyResponse:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+        service:
+          type: string
+          title: Service
+        database:
+          type: string
+          title: Database
+      additionalProperties: false
+      type: object
+      required:
+      - ok
+      - service
+      - database
+      title: ReadyResponse
+    RetrievalDebug:
+      properties:
+        request_id:
+          type: string
+          title: Request Id
+        graph_run_id:
+          type: string
+          title: Graph Run Id
+        requested_mode:
+          type: string
+          enum:
+          - hybrid
+          - keyword
+          - semantic
+          title: Requested Mode
+        actual_mode:
+          anyOf:
+          - type: string
+            enum:
+            - keyword
+            - semantic
+          - type: 'null'
+          title: Actual Mode
+        state_summary:
+          additionalProperties: true
+          type: object
+          title: State Summary
+        node_durations_ms:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Node Durations Ms
+        trace:
+          items:
+            $ref: '#/components/schemas/TraceEvent'
+          type: array
+          title: Trace
+        input:
+          additionalProperties: true
+          type: object
+          title: Input
+        classification_trace:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Classification Trace
+        groups:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Groups
+        routes:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Routes
+        candidates:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Candidates
+        llm_calls:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Llm Calls
+        tool_events:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Tool Events
+      additionalProperties: false
+      type: object
+      required:
+      - request_id
+      - graph_run_id
+      - requested_mode
+      title: RetrievalDebug
+    RetrievalWarning:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        affected_group_refs:
+          items:
+            type: string
+          type: array
+          title: Affected Group Refs
+        affected_document_ids:
+          items:
+            type: string
+          type: array
+          title: Affected Document Ids
+        retryable:
+          type: boolean
+          title: Retryable
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - message
+      title: RetrievalWarning
+    RetrieveOptions:
+      properties:
+        include_document_meta:
+          type: boolean
+          title: Include Document Meta
+          default: true
+        include_debug:
+          type: boolean
+          title: Include Debug
+          default: false
+        ensure_document_coverage:
+          type: boolean
+          title: Ensure Document Coverage
+          default: false
+      additionalProperties: false
+      type: object
+      title: RetrieveOptions
+    RetrieveRequest:
+      properties:
+        user_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: User Id
+        kb_id:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: Kb Id
+        query:
+          anyOf:
+          - type: string
+            maxLength: 16000
+            minLength: 1
+          - items:
+              type: string
+              maxLength: 16000
+              minLength: 1
+            type: array
+          title: Query
+          description: 字符串表示尚未拆分的原始检索问题，检索服务会完成必要的拆分与改写；字符串列表表示调用者已利用对话历史完成指代消解、拆分与改写，每项必须是可独立检索的问题。
+        session_id:
+          anyOf:
+          - type: string
+            maxLength: 512
+          - type: 'null'
+          title: Session Id
+        doc_ids:
+          items:
+            type: string
+            maxLength: 256
+            minLength: 1
+          type: array
+          title: Doc Ids
+        temp_doc_ids:
+          items:
+            type: string
+            maxLength: 256
+            minLength: 1
+          type: array
+          title: Temp Doc Ids
+        top_k:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Top K
+          default: 5
+        max_return_tokens:
+          anyOf:
+          - type: integer
+            maximum: 262144.0
+            minimum: 128.0
+          - type: 'null'
+          title: Max Return Tokens
+        search_mode:
+          type: string
+          enum:
+          - hybrid
+          - keyword
+          - semantic
+          title: Search Mode
+          default: hybrid
+        options:
+          $ref: '#/components/schemas/RetrieveOptions'
+      additionalProperties: false
+      type: object
+      required:
+      - user_id
+      - kb_id
+      - query
+      title: RetrieveRequest
+    RetrieveResponse:
+      properties:
+        chunks:
+          items:
+            $ref: '#/components/schemas/RetrievedChunk'
+          type: array
+          title: Chunks
+        warnings:
+          items:
+            $ref: '#/components/schemas/RetrievalWarning'
+          type: array
+          title: Warnings
+        coverage:
+          $ref: '#/components/schemas/CoverageSummary'
+        usage:
+          $ref: '#/components/schemas/RetrieveUsage'
+        debug:
+          anyOf:
+          - $ref: '#/components/schemas/RetrievalDebug'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - chunks
+      - warnings
+      - coverage
+      - usage
+      title: RetrieveResponse
+    RetrieveUsage:
+      properties:
+        candidate_document_count:
+          type: integer
+          title: Candidate Document Count
+          default: 0
+        inspected_node_count:
+          type: integer
+          title: Inspected Node Count
+          default: 0
+        inspected_page_count:
+          type: integer
+          title: Inspected Page Count
+          default: 0
+        returned_count:
+          type: integer
+          title: Returned Count
+          default: 0
+        returned_tokens:
+          type: integer
+          title: Returned Tokens
+          default: 0
+        tokenizer:
+          type: string
+          title: Tokenizer
+        latency_ms:
+          type: integer
+          title: Latency Ms
+        actual_mode:
+          anyOf:
+          - type: string
+            enum:
+            - keyword
+            - semantic
+          - type: 'null'
+          title: Actual Mode
+        llm_request_count:
+          type: integer
+          title: Llm Request Count
+          default: 0
+        prompt_tokens:
+          type: integer
+          title: Prompt Tokens
+          default: 0
+        completion_tokens:
+          type: integer
+          title: Completion Tokens
+          default: 0
+        total_tokens:
+          type: integer
+          title: Total Tokens
+          default: 0
+      additionalProperties: false
+      type: object
+      required:
+      - tokenizer
+      - latency_ms
+      title: RetrieveUsage
+    RetrievedChunk:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+        document_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Id
+        document_ids:
+          items:
+            type: string
+          type: array
+          title: Document Ids
+        document_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Name
+        page_number:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Page Number
+        path:
+          type: string
+          title: Path
+        content:
+          type: string
+          title: Content
+        hint:
+          type: string
+          title: Hint
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+        source_type:
+          type: string
+          enum:
+          - page
+          - scope_metadata
+          - document_overview
+          - title_tree
+          title: Source Type
+        document_meta:
+          anyOf:
+          - $ref: '#/components/schemas/ChunkDocumentMeta'
+          - type: 'null'
+        chunk_meta:
+          additionalProperties: true
+          type: object
+          title: Chunk Meta
+      additionalProperties: false
+      type: object
+      required:
+      - chunk_id
+      - document_id
+      - document_name
+      - path
+      - content
+      - hint
+      - score
+      - source_type
+      - document_meta
+      title: RetrievedChunk
+    SafeLLMCallSummary:
+      properties:
+        model:
+          type: string
+          title: Model
+        phase:
+          type: string
+          title: Phase
+        group_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Group Index
+        group_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Group Count
+        queue_wait_ms:
+          type: integer
+          title: Queue Wait Ms
+          default: 0
+        provider_duration_ms:
+          type: integer
+          title: Provider Duration Ms
+          default: 0
+        prompt_tokens:
+          type: integer
+          title: Prompt Tokens
+          default: 0
+        completion_tokens:
+          type: integer
+          title: Completion Tokens
+          default: 0
+        provider_request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provider Request Id
+      additionalProperties: false
+      type: object
+      required:
+      - model
+      - phase
+      title: SafeLLMCallSummary
+    TraceEvent:
+      properties:
+        sequence:
+          type: integer
+          title: Sequence
+        node:
+          type: string
+          title: Node
+        phase:
+          type: string
+          title: Phase
+        status:
+          type: string
+          enum:
+          - started
+          - ok
+          - degraded
+          - failed
+          - skipped
+          title: Status
+        duration_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Ms
+        input_counts:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Input Counts
+        output_counts:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Output Counts
+        group_refs:
+          items:
+            type: string
+          type: array
+          title: Group Refs
+        document_ids:
+          items:
+            type: string
+          type: array
+          title: Document Ids
+        fallback_used:
+          type: boolean
+          title: Fallback Used
+          default: false
+        error_category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Category
+        llm:
+          anyOf:
+          - $ref: '#/components/schemas/SafeLLMCallSummary'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - sequence
+      - node
+      - phase
+      - status
+      title: TraceEvent
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

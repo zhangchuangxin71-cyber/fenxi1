@@ -1,0 +1,51 @@
+[
+  {
+    "url": "https://example.com/generated-image.jpg",
+    "caption": "社交平台和聊天群里“牛来”相关内容刷屏的日常场景。",
+    "insertion_position": {
+      "position_id": "pos_001",
+      "heading_path": [
+        "从首日票房3420元到全网玩梗：动画《牛来》爆火事件梳理与热梗科普"
+      ],
+      "paragraph_ordinal": 1
+    }
+  },
+  {
+    "url": "https://example.com/generated-image.jpg",
+    "caption": "《牛来》宣传海报的水墨国风质感与正片低模抽象画风形成强烈反差。",
+    "insertion_position": {
+      "position_id": "pos_007",
+      "heading_path": [
+        "从首日票房3420元到全网玩梗：动画《牛来》爆火事件梳理与热梗科普",
+        "海报美如画，正片“抽象挂”，反差感拉满才是第一波流量密码"
+      ],
+      "paragraph_ordinal": 2
+    }
+  },
+  {
+    "url": "https://example.com/generated-image.jpg",
+    "caption": "片中被网友做成万能表情包的“小牛绊倒”名场面。",
+    "insertion_position": {
+      "position_id": "pos_011",
+      "heading_path": [
+        "从首日票房3420元到全网玩梗：动画《牛来》爆火事件梳理与热梗科普",
+        "全网疯传的“牛来”梗，一次给你讲明白",
+        "通用表情包梗：小牛绊倒名场面"
+      ],
+      "paragraph_ordinal": 1
+    }
+  },
+  {
+    "url": "https://example.com/generated-image.jpg",
+    "caption": "网友把各类经典海报“牛化”、群聊斗图玩梗的二创氛围。",
+    "insertion_position": {
+      "position_id": "pos_013",
+      "heading_path": [
+        "从首日票房3420元到全网玩梗：动画《牛来》爆火事件梳理与热梗科普",
+        "全网疯传的“牛来”梗，一次给你讲明白",
+        "脑洞二创梗：万物皆可“牛来”"
+      ],
+      "paragraph_ordinal": 1
+    }
+  }
+]

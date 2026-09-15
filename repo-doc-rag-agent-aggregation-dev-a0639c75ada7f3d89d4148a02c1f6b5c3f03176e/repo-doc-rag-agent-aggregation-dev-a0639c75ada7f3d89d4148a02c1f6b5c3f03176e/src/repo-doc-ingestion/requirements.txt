@@ -1,0 +1,25 @@
+fastapi==0.116.1
+uvicorn==0.35.0
+pydantic==2.12.5
+python-dotenv==1.1.0
+requests==2.33.1
+oss2>=2.19.0
+
+psycopg==3.3.3
+psycopg-binary==3.3.3
+psycopg2-binary==2.9.12
+
+PyMuPDF==1.26.4
+PyPDF2==3.0.1
+pycryptodome==3.23.0
+python-docx==1.2.0
+openpyxl==3.1.5
+python-pptx==1.0.2
+PyYAML==6.0.2
+
+volcengine-python-sdk==5.0.23
+litellm==1.83.0
+
+# test
+pytest==8.4.2
+httpx==0.28.1

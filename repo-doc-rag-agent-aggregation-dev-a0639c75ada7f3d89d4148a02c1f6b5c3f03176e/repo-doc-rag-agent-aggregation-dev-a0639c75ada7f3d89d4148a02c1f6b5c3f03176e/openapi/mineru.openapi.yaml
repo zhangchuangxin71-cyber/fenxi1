@@ -1,0 +1,538 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /file_parse:
+    post:
+      summary: Synchronously parse files or HTML URLs
+      description: Submit a parsing task to the shared async task manager, wait for it to finish, and return the final parsing
+        result in the same response.
+      operationId: parse_pdf_file_parse_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_parse_pdf_file_parse_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tasks:
+    post:
+      summary: Submit an asynchronous parse task
+      description: Submit files or HTML URLs for parsing and return immediately with a task id that can be checked via the
+        task status and result endpoints.
+      operationId: submit_parse_task_tasks_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_submit_parse_task_tasks_post'
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tasks/{task_id}:
+    get:
+      summary: Get Async Task Status
+      operationId: get_async_task_status_tasks__task_id__get
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tasks/{task_id}/result:
+    get:
+      summary: Get Async Task Result
+      operationId: get_async_task_result_tasks__task_id__result_get
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      summary: Health Check
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    Body_parse_pdf_file_parse_post:
+      properties:
+        files:
+          anyOf:
+          - items:
+              anyOf:
+              - type: string
+                contentMediaType: application/octet-stream
+              - type: string
+            type: array
+          - type: 'null'
+          items:
+            type: string
+            format: binary
+          title: Files
+          description: Upload PDF, image, DOC, DOCX, PPT, PPTX, XLS, XLSX, CSV, Markdown, or TXT files for parsing. Optional
+            when html_urls is provided.
+        html_urls:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Html Urls
+          description: HTML page URLs to parse through Jina Reader API. Repeat this field to submit multiple URLs.
+        lang_list:
+          items:
+            enum:
+            - ch
+            - ch_server
+            - korean
+            - ta
+            - te
+            - ka
+            - th
+            - el
+            - arabic
+            - east_slavic
+            - cyrillic
+            - devanagari
+          type: array
+          title: Lang List
+          description: '(Adapted for pipeline backend only) Input the languages in the pdf to improve OCR accuracy. Options:
+
+            - ch: Chinese, English, Japanese, Chinese Traditional, Latin.
+
+            - ch_server: Chinese, English, Japanese, Chinese Traditional, Latin.
+
+            - korean: Korean, English.
+
+            - ta: Tamil, English.
+
+            - te: Telugu, English.
+
+            - ka: Kannada.
+
+            - th: Thai, English.
+
+            - el: Greek, English.
+
+            - arabic: Arabic, Persian, Uyghur, Urdu, Pashto, Kurdish, Sindhi, Balochi, English.
+
+            - east_slavic: Russian, Belarusian, Ukrainian, English.
+
+            - cyrillic: Russian, Belarusian, Ukrainian, Serbian (Cyrillic), Bulgarian, Mongolian, Abkhazian, Adyghe, Kabardian,
+            Avar, Dargin, Ingush, Chechen, Lak, Lezgin, Tabasaran, Kazakh, Kyrgyz, Tajik, Macedonian, Tatar, Chuvash, Bashkir,
+            Malian, Moldovan, Udmurt, Komi, Ossetian, Buryat, Kalmyk, Tuvan, Sakha, Karakalpak, English.
+
+            - devanagari: Hindi, Marathi, Nepali, Bihari, Maithili, Angika, Bhojpuri, Magahi, Santali, Newari, Konkani, Sanskrit,
+            Haryanvi, English.'
+          default:
+          - ch
+        backend:
+          type: string
+          enum:
+          - pipeline
+          - vlm-engine
+          - hybrid-engine
+          - vlm-http-client
+          - hybrid-http-client
+          title: Backend
+          description: 'The backend for parsing:
+
+            - pipeline: More general, supports multiple languages, hallucination-free.
+
+            - vlm-engine: High accuracy via local computing power, supports Chinese and English documents only.
+
+            - vlm-http-client: High accuracy via remote computing power(client suitable for openai-compatible servers), supports
+            Chinese and English documents only.
+
+            - hybrid-engine: Hybrid parsing via local computing power, supports multiple languages. Use effort to switch medium/high
+            behavior.
+
+            - hybrid-http-client: Hybrid parsing via remote computing power but requires a little local computing power(client
+            suitable for openai-compatible servers), supports multiple languages. Use effort to switch medium/high behavior.'
+          default: pipeline
+        effort:
+          type: string
+          enum:
+          - medium
+          - high
+          title: Effort
+          description: '(Adapted only for hybrid backend) Hybrid parsing effort:
+
+            - medium: Faster parsing for most documents, balancing accuracy and efficiency. Image/chart analysis is disabled.
+
+            - high: Higher-accuracy parsing with image/chart analysis support, which may take longer.'
+          default: medium
+        parse_method:
+          type: string
+          title: Parse Method
+          description: '(Adapted only for pipeline and hybrid backend)The method for parsing PDF:
+
+            - auto: Automatically determine the method based on the file type
+
+            - txt: Use text extraction method
+
+            - ocr: Use OCR method for image-based PDFs
+
+            '
+          default: auto
+        formula_enable:
+          type: boolean
+          title: Formula Enable
+          description: Enable formula parsing.
+          default: true
+        table_enable:
+          type: boolean
+          title: Table Enable
+          description: Enable table parsing.
+          default: true
+        image_analysis:
+          type: boolean
+          title: Image Analysis
+          description: Enable image/chart analysis for VLM and hybrid backends. Hybrid medium effort automatically disables
+            image/chart analysis.
+          default: true
+        server_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Server Url
+          description: (Adapted only for <vlm/hybrid>-http-client backend)openai compatible server url, e.g., http://127.0.0.1:30000
+        return_md:
+          type: boolean
+          title: Return Md
+          description: Return markdown content in response
+          default: true
+        return_middle_json:
+          type: boolean
+          title: Return Middle Json
+          description: Return middle JSON in response
+          default: false
+        return_model_output:
+          type: boolean
+          title: Return Model Output
+          description: Return model output JSON in response
+          default: false
+        return_content_list:
+          type: boolean
+          title: Return Content List
+          description: Return content list JSON in response
+          default: false
+        return_images:
+          type: boolean
+          title: Return Images
+          description: Return extracted images in response
+          default: false
+        response_format_zip:
+          type: boolean
+          title: Response Format Zip
+          description: Return results as a ZIP file instead of JSON
+          default: false
+        return_original_file:
+          type: boolean
+          title: Return Original File
+          description: Include the processed original input file and raw uploaded image evidence in the ZIP result; ignored
+            unless response_format_zip=true
+          default: false
+        client_side_output_generation:
+          type: boolean
+          title: Client Side Output Generation
+          description: Defer final markdown/content-list generation to the client. When enabled, the server returns staged
+            middle JSON, model output, and images.
+          default: false
+        start_page_id:
+          type: integer
+          title: Start Page Id
+          description: The starting page for PDF parsing, beginning from 0
+          default: 0
+        end_page_id:
+          type: integer
+          title: End Page Id
+          description: The ending page for PDF parsing, beginning from 0
+          default: 99999
+      type: object
+      title: Body_parse_pdf_file_parse_post
+    Body_submit_parse_task_tasks_post:
+      properties:
+        files:
+          anyOf:
+          - items:
+              anyOf:
+              - type: string
+                contentMediaType: application/octet-stream
+              - type: string
+            type: array
+          - type: 'null'
+          items:
+            type: string
+            format: binary
+          title: Files
+          description: Upload PDF, image, DOC, DOCX, PPT, PPTX, XLS, XLSX, CSV, Markdown, or TXT files for parsing. Optional
+            when html_urls is provided.
+        html_urls:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Html Urls
+          description: HTML page URLs to parse through Jina Reader API. Repeat this field to submit multiple URLs.
+        lang_list:
+          items:
+            enum:
+            - ch
+            - ch_server
+            - korean
+            - ta
+            - te
+            - ka
+            - th
+            - el
+            - arabic
+            - east_slavic
+            - cyrillic
+            - devanagari
+          type: array
+          title: Lang List
+          description: '(Adapted for pipeline backend only) Input the languages in the pdf to improve OCR accuracy. Options:
+
+            - ch: Chinese, English, Japanese, Chinese Traditional, Latin.
+
+            - ch_server: Chinese, English, Japanese, Chinese Traditional, Latin.
+
+            - korean: Korean, English.
+
+            - ta: Tamil, English.
+
+            - te: Telugu, English.
+
+            - ka: Kannada.
+
+            - th: Thai, English.
+
+            - el: Greek, English.
+
+            - arabic: Arabic, Persian, Uyghur, Urdu, Pashto, Kurdish, Sindhi, Balochi, English.
+
+            - east_slavic: Russian, Belarusian, Ukrainian, English.
+
+            - cyrillic: Russian, Belarusian, Ukrainian, Serbian (Cyrillic), Bulgarian, Mongolian, Abkhazian, Adyghe, Kabardian,
+            Avar, Dargin, Ingush, Chechen, Lak, Lezgin, Tabasaran, Kazakh, Kyrgyz, Tajik, Macedonian, Tatar, Chuvash, Bashkir,
+            Malian, Moldovan, Udmurt, Komi, Ossetian, Buryat, Kalmyk, Tuvan, Sakha, Karakalpak, English.
+
+            - devanagari: Hindi, Marathi, Nepali, Bihari, Maithili, Angika, Bhojpuri, Magahi, Santali, Newari, Konkani, Sanskrit,
+            Haryanvi, English.'
+          default:
+          - ch
+        backend:
+          type: string
+          enum:
+          - pipeline
+          - vlm-engine
+          - hybrid-engine
+          - vlm-http-client
+          - hybrid-http-client
+          title: Backend
+          description: 'The backend for parsing:
+
+            - pipeline: More general, supports multiple languages, hallucination-free.
+
+            - vlm-engine: High accuracy via local computing power, supports Chinese and English documents only.
+
+            - vlm-http-client: High accuracy via remote computing power(client suitable for openai-compatible servers), supports
+            Chinese and English documents only.
+
+            - hybrid-engine: Hybrid parsing via local computing power, supports multiple languages. Use effort to switch medium/high
+            behavior.
+
+            - hybrid-http-client: Hybrid parsing via remote computing power but requires a little local computing power(client
+            suitable for openai-compatible servers), supports multiple languages. Use effort to switch medium/high behavior.'
+          default: pipeline
+        effort:
+          type: string
+          enum:
+          - medium
+          - high
+          title: Effort
+          description: '(Adapted only for hybrid backend) Hybrid parsing effort:
+
+            - medium: Faster parsing for most documents, balancing accuracy and efficiency. Image/chart analysis is disabled.
+
+            - high: Higher-accuracy parsing with image/chart analysis support, which may take longer.'
+          default: medium
+        parse_method:
+          type: string
+          title: Parse Method
+          description: '(Adapted only for pipeline and hybrid backend)The method for parsing PDF:
+
+            - auto: Automatically determine the method based on the file type
+
+            - txt: Use text extraction method
+
+            - ocr: Use OCR method for image-based PDFs
+
+            '
+          default: auto
+        formula_enable:
+          type: boolean
+          title: Formula Enable
+          description: Enable formula parsing.
+          default: true
+        table_enable:
+          type: boolean
+          title: Table Enable
+          description: Enable table parsing.
+          default: true
+        image_analysis:
+          type: boolean
+          title: Image Analysis
+          description: Enable image/chart analysis for VLM and hybrid backends. Hybrid medium effort automatically disables
+            image/chart analysis.
+          default: true
+        server_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Server Url
+          description: (Adapted only for <vlm/hybrid>-http-client backend)openai compatible server url, e.g., http://127.0.0.1:30000
+        return_md:
+          type: boolean
+          title: Return Md
+          description: Return markdown content in response
+          default: true
+        return_middle_json:
+          type: boolean
+          title: Return Middle Json
+          description: Return middle JSON in response
+          default: false
+        return_model_output:
+          type: boolean
+          title: Return Model Output
+          description: Return model output JSON in response
+          default: false
+        return_content_list:
+          type: boolean
+          title: Return Content List
+          description: Return content list JSON in response
+          default: false
+        return_images:
+          type: boolean
+          title: Return Images
+          description: Return extracted images in response
+          default: false
+        response_format_zip:
+          type: boolean
+          title: Response Format Zip
+          description: Return results as a ZIP file instead of JSON
+          default: false
+        return_original_file:
+          type: boolean
+          title: Return Original File
+          description: Include the processed original input file and raw uploaded image evidence in the ZIP result; ignored
+            unless response_format_zip=true
+          default: false
+        client_side_output_generation:
+          type: boolean
+          title: Client Side Output Generation
+          description: Defer final markdown/content-list generation to the client. When enabled, the server returns staged
+            middle JSON, model output, and images.
+          default: false
+        start_page_id:
+          type: integer
+          title: Start Page Id
+          description: The starting page for PDF parsing, beginning from 0
+          default: 0
+        end_page_id:
+          type: integer
+          title: End Page Id
+          description: The ending page for PDF parsing, beginning from 0
+          default: 99999
+      type: object
+      title: Body_submit_parse_task_tasks_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

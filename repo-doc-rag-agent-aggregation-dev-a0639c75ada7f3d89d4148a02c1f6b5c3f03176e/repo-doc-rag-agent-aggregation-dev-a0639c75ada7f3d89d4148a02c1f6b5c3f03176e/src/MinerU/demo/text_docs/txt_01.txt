@@ -1,0 +1,10 @@
+GEO RAG TXT Test
+
+这是一个纯文本输入样例，用于验证 MinerU FastAPI 服务对 TXT 文件的处理。
+
+场景：
+1. 记录 AI 平台回答中对品牌和产品的描述。
+2. 判断回答中是否存在不实信息。
+3. 对生成的推广文章进行事实校验。
+
+结论：该文件应该被解析为 Markdown、middle_json 和 content_list。

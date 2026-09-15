@@ -1,0 +1,55 @@
+services:
+  app:
+    build:
+      context: .
+    image: multimodal-embedding-service:latest
+    container_name: multimodal-embedding-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      EMBEDDING_SERVICE_HOST: 0.0.0.0
+      EMBEDDING_SERVICE_PORT: ${EMBEDDING_SERVICE_PORT:-8030}
+      CHINESE_CLIP_MODEL_PATH: /app/models
+      VECTOR_STORE: none
+      HF_ENDPOINT: https://hf-mirror.com
+      HF_USE_MIRROR: ${HF_USE_MIRROR:-1}
+      AUTO_DOWNLOAD_MODELS: ${AUTO_DOWNLOAD_MODELS:-1}
+      # runtime 清扫（详见 embedding_service/PARAMS.md；日志仅输出到 stdout，用 docker compose logs 查看）
+      # 固定 2 路并发（覆盖 .env 中的 EMBEDDING_WORKERS）；改并发请直接改此处
+      EMBEDDING_WORKERS: "2"
+      TMP_MAX_AGE_HOURS: ${TMP_MAX_AGE_HOURS:-6}
+      RUNTIME_CLEANUP_INTERVAL_HOURS: ${RUNTIME_CLEANUP_INTERVAL_HOURS:-1}
+      LOG_MAX_AGE_DAYS: ${LOG_MAX_AGE_DAYS:-7}
+      # 大文件 OSS 下载与处理（0 = 不限制体积；仍受 mem_limit、磁盘约束）
+      MEDIA_DOWNLOAD_TIMEOUT: "3600"
+      MEDIA_MAX_IMAGE_MB: "0"
+      MEDIA_MAX_VIDEO_MB: "0"
+      MAX_VIDEO_RESOLUTION: "7680"
+      MAX_FRAME_RESOLUTION: "1920"
+    ports:
+      - "${EMBEDDING_SERVICE_PORT:-8030}:${EMBEDDING_SERVICE_PORT:-8030}"
+    volumes:
+      - ./models:/app/models
+      - embedding_runtime:/app/runtime
+    mem_limit: ${EMBEDDING_MEM_LIMIT:-16g}
+    # 停止容器时等待视频任务收尾，避免 deploy 时强杀导致孤儿 tmp / INTERRUPTED 任务
+    stop_grace_period: 120s
+    # 覆盖 Dockerfile：重负载时 /health 可能较慢，放宽超时避免长期 unhealthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import os, urllib.request; urllib.request.urlopen(f'http://127.0.0.1:{os.getenv(\"EMBEDDING_SERVICE_PORT\", \"8030\")}/health', timeout=20).read()",
+        ]
+      interval: 45s
+      timeout: 30s
+      start_period: 900s
+      retries: 6
+    # 回收 ffmpeg 子进程僵尸（长时间跑批时更稳）
+    init: true
+
+volumes:
+  embedding_runtime:

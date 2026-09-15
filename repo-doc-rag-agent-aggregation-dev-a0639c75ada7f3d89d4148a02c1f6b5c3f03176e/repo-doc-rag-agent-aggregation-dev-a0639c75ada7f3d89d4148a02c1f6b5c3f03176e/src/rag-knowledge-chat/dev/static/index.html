@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knowledge Chat Debug Console</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Knowledge Chat</h1>
+      <span id="connection-state">Ready</span>
+    </div>
+    <button id="clear-button" type="button" title="清空本次运行">清空</button>
+  </header>
+  <main>
+    <section id="request-panel" aria-label="请求配置">
+      <h2>请求</h2>
+      <div class="fields">
+        <label>Manifest 目录<input id="manifest-dir" type="text"></label>
+        <label>User ID<input id="user-id" value="eval-user" type="text"></label>
+        <label>KB ID<input id="kb-id" value="eval-rag-kb" type="text"></label>
+        <label>噪声文档数<input id="noise-count" value="3" min="0" max="99" type="number"></label>
+        <label>Top K<input id="top-k" value="5" min="1" max="20" type="number"></label>
+        <label>Max return tokens<input id="max-return-tokens" value="32768" type="number"></label>
+      </div>
+      <div class="toolbar">
+        <button id="generate-button" type="button">生成请求体</button>
+        <button id="format-button" type="button">格式化</button>
+        <button id="send-button" class="primary" type="button">发送</button>
+      </div>
+      <textarea id="request-json" spellcheck="false" aria-label="请求 JSON"></textarea>
+    </section>
+    <section id="conversation-panel" aria-label="对话预览">
+      <h2>对话</h2>
+      <div id="conversation" role="log" aria-live="polite"></div>
+    </section>
+    <section id="trace-panel" aria-label="链路追踪">
+      <div class="trace-header">
+        <h2>Trace</h2>
+        <nav class="trace-tabs" aria-label="Trace 类型">
+          <button class="trace-tab active" type="button" data-trace-view="chat" aria-selected="true">对话链路</button>
+          <button class="trace-tab" type="button" data-trace-view="retrieval" aria-selected="false">检索链路</button>
+        </nav>
+      </div>
+      <div id="chat-trace-view" class="trace-view active" data-trace-view="chat">
+        <div id="timeline"></div>
+        <details>
+          <summary>原始 SSE</summary>
+          <pre id="raw-events"></pre>
+        </details>
+      </div>
+      <div id="retrieval-trace-view" class="trace-view" data-trace-view="retrieval" hidden>
+        <div id="retrieval-debug" class="retrieval-debug">
+          <p class="trace-empty">尚无检索 trace</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

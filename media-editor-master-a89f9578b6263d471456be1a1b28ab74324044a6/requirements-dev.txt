@@ -1,0 +1,5 @@
+# Dev / test dependencies (not required to run the API server)
+-r requirements.txt
+
+pytest>=7.0
+httpx>=0.27

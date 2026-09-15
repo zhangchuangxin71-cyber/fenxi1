@@ -1,0 +1,81 @@
+{
+  "fixture_schema_version": 1,
+  "theme_count": 8,
+  "expected_theme_count": 8,
+  "all_passed": true,
+  "failed_themes": [],
+  "themes": [
+    {
+      "theme_id": "bold-navy",
+      "label": "商务深蓝",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 39.086
+    },
+    {
+      "theme_id": "graphite-minimal",
+      "label": "石墨极简",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 10.706
+    },
+    {
+      "theme_id": "minimal",
+      "label": "内容极简",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 8.853
+    },
+    {
+      "theme_id": "moyu-green",
+      "label": "摸鱼绿",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 16.408
+    },
+    {
+      "theme_id": "olive-journal",
+      "label": "橄榄手记",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 11.177
+    },
+    {
+      "theme_id": "professional-clean",
+      "label": "专业清朗",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 9.005
+    },
+    {
+      "theme_id": "red-white",
+      "label": "红白重点",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 11.828
+    },
+    {
+      "theme_id": "warm-editorial",
+      "label": "温暖编辑",
+      "valid": true,
+      "warning_count": 0,
+      "fallback_used": false,
+      "deterministic": true,
+      "elapsed_ms": 9.193999999999999
+    }
+  ]
+}

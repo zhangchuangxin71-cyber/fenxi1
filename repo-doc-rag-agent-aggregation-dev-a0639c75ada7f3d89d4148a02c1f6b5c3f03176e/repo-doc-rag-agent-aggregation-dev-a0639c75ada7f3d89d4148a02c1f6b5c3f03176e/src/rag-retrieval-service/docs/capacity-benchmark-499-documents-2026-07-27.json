@@ -1,0 +1,565 @@
+{
+  "schema_version": "1.0",
+  "generated_at_epoch_seconds": 1785135428,
+  "service": {
+    "base_url": "http://127.0.0.1:8220",
+    "pid": 36987
+  },
+  "database": {
+    "scope_document_count": 499,
+    "user_id": "eval-user",
+    "kb_id": "eval-rag-kb"
+  },
+  "case": {
+    "query_id": "q_000003",
+    "query_text": "北京的建筑垃圾资源化利用国家循环经济标准化试点的承担单位是哪家？",
+    "target_doc_id": "6dfae12e-1333-5598-9213-b98701dd7138",
+    "labeled_pages": [
+      1
+    ]
+  },
+  "configuration": {
+    "top_k": 5,
+    "max_return_tokens": 8192,
+    "timeout_seconds": 1000.0,
+    "concurrency": 30,
+    "sample_interval_seconds": 0.25
+  },
+  "phases": [
+    {
+      "name": "small_scope_correctness",
+      "concurrency": 1,
+      "wall_seconds": 6.683,
+      "throughput_requests_per_second": 0.1496,
+      "requests": {
+        "request_count": 1,
+        "http_success_count": 1,
+        "nonempty_result_count": 1,
+        "target_document_hit_count": 1,
+        "labeled_page_hit_count": 1,
+        "latency_ms": {
+          "min": 6357.51,
+          "mean": 6357.51,
+          "p50": 6357.51,
+          "p95": 6357.51,
+          "max": 6357.51
+        },
+        "total_llm_requests": 2,
+        "warning_counts": {},
+        "status_counts": {
+          "200": 1
+        },
+        "errors": []
+      },
+      "resources": {
+        "sample_count": 27,
+        "sampled_duration_seconds": 6.555,
+        "retrieval_process_cpu_percent_one_core": 6.56,
+        "retrieval_process_cpu_percent_host_capacity": 0.234,
+        "host_cpu_percent": 1.46,
+        "retrieval_rss_bytes": {
+          "start": 149716992,
+          "peak": 165986304,
+          "end": 165986304,
+          "peak_growth": 16269312
+        },
+        "host_mem_available_bytes": {
+          "start": 13780520960,
+          "minimum": 13755138048,
+          "end": 13755138048,
+          "maximum_drop": 25382912
+        },
+        "memory_psi_some_avg10_max": 0.0,
+        "database_connections": {
+          "start": 2,
+          "peak": 2,
+          "end": 2
+        }
+      },
+      "database_delta": {
+        "transactions_committed": 33,
+        "transactions_rolled_back": 0,
+        "blocks_read": 1,
+        "blocks_hit": 1957,
+        "temp_files": 0,
+        "temp_bytes": 0
+      },
+      "observations": [
+        {
+          "request_index": 0,
+          "latency_ms": 6357.512695999958,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "full_scope_single_request",
+      "concurrency": 1,
+      "wall_seconds": 3.933,
+      "throughput_requests_per_second": 0.2543,
+      "requests": {
+        "request_count": 1,
+        "http_success_count": 1,
+        "nonempty_result_count": 1,
+        "target_document_hit_count": 1,
+        "labeled_page_hit_count": 1,
+        "latency_ms": {
+          "min": 3891.04,
+          "mean": 3891.04,
+          "p50": 3891.04,
+          "p95": 3891.04,
+          "max": 3891.04
+        },
+        "total_llm_requests": 2,
+        "warning_counts": {},
+        "status_counts": {
+          "200": 1
+        },
+        "errors": []
+      },
+      "resources": {
+        "sample_count": 16,
+        "sampled_duration_seconds": 3.791,
+        "retrieval_process_cpu_percent_one_core": 0.79,
+        "retrieval_process_cpu_percent_host_capacity": 0.028,
+        "host_cpu_percent": 0.38,
+        "retrieval_rss_bytes": {
+          "start": 166572032,
+          "peak": 168214528,
+          "end": 168214528,
+          "peak_growth": 1642496
+        },
+        "host_mem_available_bytes": {
+          "start": 13751918592,
+          "minimum": 13744807936,
+          "end": 13748731904,
+          "maximum_drop": 7110656
+        },
+        "memory_psi_some_avg10_max": 0.0,
+        "database_connections": {
+          "start": 2,
+          "peak": 2,
+          "end": 2
+        }
+      },
+      "database_delta": {
+        "transactions_committed": 24,
+        "transactions_rolled_back": 0,
+        "blocks_read": 0,
+        "blocks_hit": 1110,
+        "temp_files": 0,
+        "temp_bytes": 0
+      },
+      "observations": [
+        {
+          "request_index": 0,
+          "latency_ms": 3891.0403489999226,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "full_scope_30_concurrent",
+      "concurrency": 30,
+      "wall_seconds": 9.541,
+      "throughput_requests_per_second": 3.1445,
+      "requests": {
+        "request_count": 30,
+        "http_success_count": 30,
+        "nonempty_result_count": 30,
+        "target_document_hit_count": 30,
+        "labeled_page_hit_count": 30,
+        "latency_ms": {
+          "min": 5041.29,
+          "mean": 6472.24,
+          "p50": 6304.18,
+          "p95": 9344.24,
+          "max": 9417.61
+        },
+        "total_llm_requests": 60,
+        "warning_counts": {},
+        "status_counts": {
+          "200": 30
+        },
+        "errors": []
+      },
+      "resources": {
+        "sample_count": 38,
+        "sampled_duration_seconds": 9.344,
+        "retrieval_process_cpu_percent_one_core": 12.95,
+        "retrieval_process_cpu_percent_host_capacity": 0.462,
+        "host_cpu_percent": 0.9,
+        "retrieval_rss_bytes": {
+          "start": 168349696,
+          "peak": 229343232,
+          "end": 229343232,
+          "peak_growth": 60993536
+        },
+        "host_mem_available_bytes": {
+          "start": 13745766400,
+          "minimum": 13592793088,
+          "end": 13597007872,
+          "maximum_drop": 152973312
+        },
+        "memory_psi_some_avg10_max": 0.0,
+        "database_connections": {
+          "start": 2,
+          "peak": 31,
+          "end": 31
+        }
+      },
+      "database_delta": {
+        "transactions_committed": 98,
+        "transactions_rolled_back": 0,
+        "blocks_read": 0,
+        "blocks_hit": 7037,
+        "temp_files": 0,
+        "temp_bytes": 0
+      },
+      "observations": [
+        {
+          "request_index": 0,
+          "latency_ms": 7272.870182999668,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 1,
+          "latency_ms": 9417.609397999968,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 2,
+          "latency_ms": 6722.883467999964,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 3,
+          "latency_ms": 5926.051031000043,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 4,
+          "latency_ms": 6274.144433999936,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 5,
+          "latency_ms": 5563.089009000123,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 6,
+          "latency_ms": 5588.326548000168,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 7,
+          "latency_ms": 6034.322491999774,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 8,
+          "latency_ms": 5359.157888000027,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 9,
+          "latency_ms": 5999.247469999773,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 10,
+          "latency_ms": 5086.689304000174,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 11,
+          "latency_ms": 6994.761059000211,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 12,
+          "latency_ms": 5436.684092999712,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 13,
+          "latency_ms": 7614.116379999814,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 14,
+          "latency_ms": 5878.518148000239,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 15,
+          "latency_ms": 5201.756411000133,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 16,
+          "latency_ms": 5563.48082400018,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 17,
+          "latency_ms": 6718.8154329996905,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 18,
+          "latency_ms": 5041.288015999726,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 19,
+          "latency_ms": 6304.1845199995805,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 20,
+          "latency_ms": 6852.9015669996625,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 21,
+          "latency_ms": 6706.459222999911,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 22,
+          "latency_ms": 6358.708509999815,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 23,
+          "latency_ms": 6889.207210999757,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 24,
+          "latency_ms": 5513.018209000165,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 25,
+          "latency_ms": 6608.326089999991,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 26,
+          "latency_ms": 8318.4948170001,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 27,
+          "latency_ms": 9344.235149999804,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 28,
+          "latency_ms": 7175.605625000117,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        },
+        {
+          "request_index": 29,
+          "latency_ms": 6402.190857000278,
+          "status_code": 200,
+          "chunk_count": 1,
+          "target_document_hit": true,
+          "labeled_page_hit": true,
+          "warning_codes": [],
+          "llm_request_count": 2,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

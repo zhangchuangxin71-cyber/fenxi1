@@ -1,0 +1,27 @@
+{
+  "python_version": "3.12",
+  "image_distro": "bookworm",
+  "dependencies": ["."],
+  "graphs": {
+    "wechat_article": "./app/graph/builder.py:graph",
+    "contract_probe": "./app/graph/contract_probe.py:graph"
+  },
+  "env": ".env",
+  "checkpointer": {
+    "path": "./app/persistence/checkpointer.py:create_checkpointer",
+    "ttl": {
+      "strategy": "delete",
+      "default_ttl": 4320,
+      "sweep_interval_minutes": 5,
+      "sweep_limit": 100
+    },
+    "serde": {
+      "pickle_fallback": false,
+      "allowed_json_modules": null,
+      "allowed_msgpack_modules": null
+    }
+  },
+  "http": {
+    "disable_store": true
+  }
+}

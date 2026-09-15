@@ -1,0 +1,540 @@
+openapi: 3.1.0
+info:
+  title: Ingestion API
+  version: 0.1.0
+paths:
+  /ingestion/v1/documents/ingest:
+    post:
+      tags:
+      - ingestion
+      summary: Ingest Document
+      description: 普通文档入库 API 接口。
+      operationId: ingest_document_ingestion_v1_documents_ingest_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ingestion/v1/documents/temp-ingest:
+    post:
+      tags:
+      - ingestion
+      summary: Temp Ingest Document
+      description: 临时文档入库 API 接口。
+      operationId: temp_ingest_document_ingestion_v1_documents_temp_ingest_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TempIngestRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ingestion/v1/documents/{doc_id}/status:
+    get:
+      tags:
+      - ingestion
+      summary: Get Status By Doc
+      description: 按用户、知识库与落库文档 UUID 查询任务状态 API 接口。
+      operationId: get_status_by_doc_ingestion_v1_documents__doc_id__status_get
+      parameters:
+      - name: doc_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Doc Id
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: User Id
+      - name: kb_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Kb Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ingestion/v1/tasks/{task_id}:
+    get:
+      tags:
+      - ingestion
+      summary: Get Status By Task
+      description: 按任务 ID 查询任务状态 API 接口。
+      operationId: get_status_by_task_ingestion_v1_tasks__task_id__get
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ingestion/v1/documents/{doc_id}:
+    delete:
+      tags:
+      - ingestion
+      summary: Delete Document
+      description: 删除文档任务数据（硬删除）。
+      operationId: delete_document_ingestion_v1_documents__doc_id__delete
+      parameters:
+      - name: doc_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Doc Id
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: User Id
+      - name: kb_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Kb Id
+      - name: is_temp
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Is Temp
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ingestion/v1/sessions/{session_id}/temp-documents:
+    delete:
+      tags:
+      - ingestion
+      summary: Delete Session Temp Documents
+      description: 会话销毁时清理该 session 命名空间下的临时文档。
+      operationId: delete_session_temp_documents_ingestion_v1_sessions__session_id__temp_documents_delete
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      - name: kb_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Kb Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /healthz:
+    get:
+      summary: Healthz
+      description: 健康检查接口。
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Healthz Healthz Get
+  /:
+    get:
+      summary: Root
+      description: Service metadata endpoint.
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Root  Get
+components:
+  schemas:
+    ApiResponse:
+      properties:
+        code:
+          type: integer
+          title: Code
+          description: 业务状态码。
+        message:
+          type: string
+          title: Message
+          description: 提示信息。
+        data:
+          title: Data
+          description: 返回数据体。
+      type: object
+      required:
+      - code
+      - message
+      title: ApiResponse
+      description: 统一 API 响应包装。
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IngestConfig:
+      properties:
+        enable_ocr:
+          type: boolean
+          title: Enable Ocr
+          description: 是否启用 OCR。
+          default: true
+        language:
+          type: string
+          enum:
+          - zh
+          - en
+          - auto
+          title: Language
+          description: 文档主语言。
+          default: zh
+        extract_tables:
+          type: boolean
+          title: Extract Tables
+          description: 是否提取表格。
+          default: true
+        extract_images:
+          type: boolean
+          title: Extract Images
+          description: 是否提取图片描述。
+          default: false
+        max_tree_depth:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          title: Max Tree Depth
+          description: PageIndex 树最大深度。
+          default: 3
+        chunk_overlap:
+          type: integer
+          title: Chunk Overlap
+          description: 相邻叶子节点文本重叠字符数。
+          default: 50
+        node_max_tokens:
+          type: integer
+          title: Node Max Tokens
+          description: 叶子节点最大 Token 数。
+          default: 512
+        summary_enabled:
+          type: boolean
+          title: Summary Enabled
+          description: 是否开启摘要生成。
+          default: true
+        table_parse_mode:
+          type: string
+          enum:
+          - 'off'
+          - auto
+          - rule
+          - model
+          title: Table Parse Mode
+          description: 表格解析模式。
+          default: auto
+        chunk_overlap_ratio:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Chunk Overlap Ratio
+          description: 分块重叠比例（兼容字段，优先级低于 chunk_overlap）。
+      additionalProperties: false
+      type: object
+      title: IngestConfig
+      description: 入库执行参数配置。
+    IngestDocument:
+      properties:
+        oss_key:
+          type: string
+          minLength: 1
+          title: Oss Key
+          description: OSS 对象 Key。
+        file_name:
+          type: string
+          minLength: 1
+          title: File Name
+          description: 文件名（用于展示与回退检索）。
+        file_type:
+          type: string
+          enum:
+          - pdf
+          - doc
+          - docx
+          - txt
+          - md
+          - markdown
+          - html
+          - xlsx
+          - pptx
+          title: File Type
+          description: 文件类型。
+      additionalProperties: false
+      type: object
+      required:
+      - oss_key
+      - file_name
+      - file_type
+      title: IngestDocument
+      description: 批量提交时的单文档描述。
+    IngestRequest:
+      properties:
+        user_id:
+          type: string
+          minLength: 1
+          title: User Id
+          description: 用户 ID，用于标识多用户平台中的文档归属。
+        kb_id:
+          type: string
+          minLength: 1
+          title: Kb Id
+          description: 知识库 ID。
+        oss_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Oss Key
+          description: 单文件模式：OSS 对象 Key。
+        file_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Name
+          description: 单文件模式：文件名。
+        file_type:
+          anyOf:
+          - type: string
+            enum:
+            - pdf
+            - doc
+            - docx
+            - txt
+            - md
+            - markdown
+            - html
+            - xlsx
+            - pptx
+          - type: 'null'
+          title: File Type
+          description: 单文件模式：文件类型。
+        documents:
+          items:
+            $ref: '#/components/schemas/IngestDocument'
+          type: array
+          title: Documents
+          description: 批量模式：文档列表。
+        callback_url:
+          anyOf:
+          - type: string
+            maxLength: 2083
+            minLength: 1
+            format: uri
+          - type: 'null'
+          title: Callback Url
+          description: 任务完成/失败后的回调地址。
+        idempotency_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency Key
+          description: 幂等键；同一 kb_id 下重复提交可命中历史任务。
+        is_temp:
+          type: boolean
+          title: Is Temp
+          description: 是否为临时文档任务。
+          default: false
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+          description: 临时文档关联会话 ID。
+        config:
+          $ref: '#/components/schemas/IngestConfig'
+          description: 入库算法参数配置。
+      additionalProperties: false
+      type: object
+      required:
+      - user_id
+      - kb_id
+      title: IngestRequest
+      description: 标准入库请求：支持单文档字段或 documents 批量字段。
+    TempIngestRequest:
+      properties:
+        user_id:
+          type: string
+          minLength: 1
+          title: User Id
+          description: 用户 ID，用于标识多用户平台中的临时文档归属。
+        session_id:
+          type: string
+          minLength: 1
+          title: Session Id
+          description: 会话 ID，用于区分临时会话范围。
+        kb_id:
+          type: string
+          minLength: 1
+          title: Kb Id
+          description: 知识库 ID。
+        oss_key:
+          type: string
+          minLength: 1
+          title: Oss Key
+          description: OSS 对象 Key。
+        file_name:
+          type: string
+          minLength: 1
+          title: File Name
+          description: 文件名。
+        file_type:
+          type: string
+          enum:
+          - pdf
+          - doc
+          - docx
+          - txt
+          - md
+          - markdown
+          - html
+          - xlsx
+          - pptx
+          title: File Type
+          description: 文件类型。
+        callback_url:
+          anyOf:
+          - type: string
+            maxLength: 2083
+            minLength: 1
+            format: uri
+          - type: 'null'
+          title: Callback Url
+          description: 任务完成/失败后的回调地址。
+        idempotency_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency Key
+          description: 幂等键。
+        config:
+          $ref: '#/components/schemas/IngestConfig'
+          description: 入库算法参数配置。
+      additionalProperties: false
+      type: object
+      required:
+      - user_id
+      - session_id
+      - kb_id
+      - oss_key
+      - file_name
+      - file_type
+      title: TempIngestRequest
+      description: 临时文档入库请求（高优先级队列）。
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

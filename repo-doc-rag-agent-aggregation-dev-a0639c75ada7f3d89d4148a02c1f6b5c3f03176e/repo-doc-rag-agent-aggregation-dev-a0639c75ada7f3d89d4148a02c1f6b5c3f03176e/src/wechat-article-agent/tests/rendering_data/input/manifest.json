@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-08-21T04:00:04.415628+00:00",
+  "source": "development article_artifacts database",
+  "contains_business_identifiers": false,
+  "files": {
+    "article.md": {
+      "sha256": "d0eb7595e68d688fae1b8bd1e533593c517f741b79ccbee842b1131b726a7633"
+    },
+    "images.json": {
+      "sha256": "8c85fa93a09296049ff5170a707811e3a9d9b6bdb18a46314f1bc766583617fd"
+    },
+    "task_spec.json": {
+      "sha256": "da475db5b6b3a5064b05c1ba09353e1dfaddaa8aad2b003610d5c7b465d845eb"
+    }
+  }
+}

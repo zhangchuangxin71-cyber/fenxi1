@@ -1,0 +1,62 @@
+[project]
+name = "wechat-article-agent"
+version = "0.1.0"
+description = "LangGraph HITL workflow for WeChat article generation."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "beautifulsoup4>=4.14,<5",
+    "bleach>=6.2,<7",
+    "fastapi>=0.116,<1",
+    "httpx>=0.28,<1",
+    "jinja2>=3.1,<4",
+    "langchain-core>=1.2,<2",
+    "langgraph==1.2.11",
+    "langgraph-checkpoint-postgres==3.1.2",
+    "langgraph-sdk==0.4.2",
+    "markdown-it-py>=4,<5",
+    "psycopg[binary,pool]>=3.2,<4",
+    "pydantic>=2.12,<3",
+    "pydantic-settings>=2.12,<3",
+    "pyyaml>=6.0.3,<7",
+    "sse-starlette>=3,<4",
+    "tinycss2>=1.4,<2",
+    "uvicorn[standard]>=0.35,<1",
+]
+
+[dependency-groups]
+dev = [
+    "langgraph-cli[inmem]==0.4.31",
+    "mypy>=1.18,<2",
+    "playwright>=1.55,<2",
+    "pytest>=9,<10",
+    "pytest-asyncio>=1.2,<2",
+    "respx>=0.22,<1",
+    "ruff>=0.14,<1",
+    "types-bleach>=6.2,<7",
+    "types-pyyaml>=6.0.12.20260724",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = [
+    "contract: dependency protocol contract tests",
+    "integration: tests requiring PostgreSQL or local services",
+    "live_llm: tests calling Volcengine Ark",
+    "live_image: tests calling Volcengine Seedream",
+    "e2e: end-to-end service tests",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true

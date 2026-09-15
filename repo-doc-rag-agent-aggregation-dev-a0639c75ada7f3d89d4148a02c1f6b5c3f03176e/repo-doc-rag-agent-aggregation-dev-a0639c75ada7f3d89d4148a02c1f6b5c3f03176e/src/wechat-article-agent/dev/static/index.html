@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>微信公众号 Agent 开发面板</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>微信公众号 Agent</h1>
+      <span id="connection-state" class="status-dot">就绪</span>
+    </div>
+    <button id="clear-button" class="icon-button" type="button" title="清空面板" aria-label="清空面板">×</button>
+  </header>
+  <main>
+    <section class="request-panel" aria-label="请求配置">
+      <h2>请求与文档</h2>
+      <div class="fields">
+        <label>Agent 地址<input id="agent-url" type="url"></label>
+        <label>Retrieval 地址<input id="retrieval-url" type="url"></label>
+        <label>Manifest 文件<input id="manifest-file" type="text"></label>
+        <div class="field-grid">
+          <label>User ID<input id="user-id" type="text"></label>
+          <label>KB ID<input id="kb-id" type="text"></label>
+        </div>
+        <div class="field-grid">
+          <label>Session ID<input id="session-id" type="text"></label>
+          <label>随机文档数<input id="document-count" type="number" value="3" min="1" max="20"></label>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="random-documents" type="button">随机文档</button>
+        <button id="generate-request" type="button">生成请求体</button>
+        <button id="format-request" class="icon-button" type="button" title="格式化 JSON" aria-label="格式化 JSON">{ }</button>
+      </div>
+      <div id="document-preview" class="document-preview">
+        <p class="empty">尚未选择文档</p>
+      </div>
+      <label class="editor-label">请求 JSON
+        <textarea id="request-json" spellcheck="false"></textarea>
+      </label>
+      <div class="toolbar run-controls">
+        <button id="send-request" class="primary" type="button">发送请求</button>
+        <button id="stop-receiving" type="button" disabled>停止接收</button>
+        <button id="cancel-run" class="danger" type="button" disabled>取消 run</button>
+      </div>
+    </section>
+
+    <section class="experience-panel" aria-label="用户体验预览">
+      <div class="panel-heading">
+        <h2>用户视图</h2>
+        <span id="run-metadata">未运行</span>
+      </div>
+      <div id="conversation" role="log" aria-live="polite"></div>
+      <div id="composer" class="composer">
+        <textarea id="user-input" rows="2" placeholder="继续对话或输入修改要求"></textarea>
+        <button id="send-message" class="primary" type="button">发送</button>
+      </div>
+    </section>
+
+    <section class="trace-panel" aria-label="调试链路">
+      <div class="panel-heading">
+        <h2>Debug Trace</h2>
+        <button id="copy-trace" class="icon-button" type="button" title="复制 trace" aria-label="复制 trace">⧉</button>
+      </div>
+      <div class="trace-tabs" role="tablist">
+        <button class="trace-tab active" data-tab="timeline" type="button">运行链路</button>
+        <button class="trace-tab" data-tab="llm" type="button">LLM 调用</button>
+        <button class="trace-tab" data-tab="tool" type="button">工具/Skill 调用</button>
+        <button class="trace-tab" data-tab="debug" type="button">原始调用</button>
+        <button class="trace-tab" data-tab="events" type="button">SSE</button>
+      </div>
+      <div id="timeline-view" class="trace-view active"></div>
+      <div id="llm-view" class="trace-view" hidden></div>
+      <div id="tool-view" class="trace-view" hidden></div>
+      <pre id="debug-view" class="trace-view" hidden>终态后显示节点、LLM 和工具的原始输入输出。</pre>
+      <pre id="events-view" class="trace-view" hidden></pre>
+    </section>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

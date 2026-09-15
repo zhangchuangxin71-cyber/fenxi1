@@ -1,0 +1,302 @@
+{
+  "_comment": "深夜面馆 16 句测试。复制到 Swagger 时只复制某个接口对应的对象，不要带 _comment。text 必须一行。",
+  "NOODLE_TEXT_ONE_LINE": "夜深之后，城市褪去了白日的喧嚣，穿行在空旷的街道上，抬眼望去，街角的面馆亮着一盏暖融融的灯。放眼望去，小店不大，却在冷清的夜色里显得格外温馨，成了晚归之人的一处避风港。细看，大锅里的骨汤咕嘟咕嘟持续翻滚，手工面条下入锅中，在沸水里轻轻起伏。一碗碗热气腾腾的面食被端上桌，升腾的白雾裹着鲜香，瞬间驱散了深夜的寒意。加班至深夜的打工人、独自在外打拼的异乡人安静坐在桌前，低头嗦面、小口喝汤。一口热食下肚，一路奔波的疲惫、独处异乡的孤单，都在这一碗面的温度里慢慢消散。",
+  "create_workspace": {
+    "label": "网页测试-深夜面馆-16句"
+  },
+  "split": {
+    "text": "夜深之后，城市褪去了白日的喧嚣，穿行在空旷的街道上，抬眼望去，街角的面馆亮着一盏暖融融的灯。放眼望去，小店不大，却在冷清的夜色里显得格外温馨，成了晚归之人的一处避风港。细看，大锅里的骨汤咕嘟咕嘟持续翻滚，手工面条下入锅中，在沸水里轻轻起伏。一碗碗热气腾腾的面食被端上桌，升腾的白雾裹着鲜香，瞬间驱散了深夜的寒意。加班至深夜的打工人、独自在外打拼的异乡人安静坐在桌前，低头嗦面、小口喝汤。一口热食下肚，一路奔波的疲惫、独处异乡的孤单，都在这一碗面的温度里慢慢消散。",
+    "include_ai_prompts": false
+  },
+  "split_with_ai_prompts": {
+    "text": "夜深之后，城市褪去了白日的喧嚣，穿行在空旷的街道上，抬眼望去，街角的面馆亮着一盏暖融融的灯。放眼望去，小店不大，却在冷清的夜色里显得格外温馨，成了晚归之人的一处避风港。细看，大锅里的骨汤咕嘟咕嘟持续翻滚，手工面条下入锅中，在沸水里轻轻起伏。一碗碗热气腾腾的面食被端上桌，升腾的白雾裹着鲜香，瞬间驱散了深夜的寒意。加班至深夜的打工人、独自在外打拼的异乡人安静坐在桌前，低头嗦面、小口喝汤。一口热食下肚，一路奔波的疲惫、独处异乡的孤单，都在这一碗面的温度里慢慢消散。",
+    "include_ai_prompts": true,
+    "global_style": "电影质感，深夜烟火气，暖色调纪录片"
+  },
+  "audio_process_16_segments": {
+    "label": "男声第一稿",
+    "text_digest": "替换为 split 返回的 text_digest",
+    "segments": [
+      {
+        "index": 1,
+        "text": "夜深之后，城市褪去了白日的喧嚣，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/1.wav"
+        }
+      },
+      {
+        "index": 2,
+        "text": "穿行在空旷的街道上，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/2.wav"
+        }
+      },
+      {
+        "index": 3,
+        "text": "抬眼望去，街角的面馆亮着一盏暖融融的灯。",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/3.wav"
+        }
+      },
+      {
+        "index": 4,
+        "text": "放眼望去，小店不大，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/4.wav"
+        }
+      },
+      {
+        "index": 5,
+        "text": "却在冷清的夜色里显得格外温馨，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/5.wav"
+        }
+      },
+      {
+        "index": 6,
+        "text": "成了晚归之人的一处避风港。",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/6.wav"
+        }
+      },
+      {
+        "index": 7,
+        "text": "细看，大锅里的骨汤咕嘟咕嘟持续翻滚，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/7.wav"
+        }
+      },
+      {
+        "index": 8,
+        "text": "手工面条下入锅中，在沸水里轻轻起伏。",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/8.wav"
+        }
+      },
+      {
+        "index": 9,
+        "text": "一碗碗热气腾腾的面食被端上桌，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/9.wav"
+        }
+      },
+      {
+        "index": 10,
+        "text": "升腾的白雾裹着鲜香，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/10.wav"
+        }
+      },
+      {
+        "index": 11,
+        "text": "瞬间驱散了深夜的寒意。",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/11.wav"
+        }
+      },
+      {
+        "index": 12,
+        "text": "加班至深夜的打工人、",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/12.wav"
+        }
+      },
+      {
+        "index": 13,
+        "text": "独自在外打拼的异乡人安静坐在桌前，",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/13.wav"
+        }
+      },
+      {
+        "index": 14,
+        "text": "低头嗦面、小口喝汤。",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/14.wav"
+        }
+      },
+      {
+        "index": 15,
+        "text": "一口热食下肚，一路奔波的疲惫、",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/15.wav"
+        }
+      },
+      {
+        "index": 16,
+        "text": "独处异乡的孤单，都在这一碗面的温度里慢慢消散。",
+        "audio": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/audio/16.wav"
+        }
+      }
+    ],
+    "force_refresh": false
+  },
+  "media_bind_16_segments": {
+    "revision_id": "替换为 audio/process 返回的 revision_id",
+    "text_digest": "替换为 split 返回的 text_digest",
+    "audio_config_digest": "替换为同一 revision 的 audio_config_digest",
+    "segments": [
+      {
+        "index": 1,
+        "text": "夜深之后，城市褪去了白日的喧嚣，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/1.mp4",
+          "type": "video",
+          "start_sec": 0.0
+        }
+      },
+      {
+        "index": 2,
+        "text": "穿行在空旷的街道上，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/2.mp4",
+          "type": "video",
+          "start_sec": 4.0
+        }
+      },
+      {
+        "index": 3,
+        "text": "抬眼望去，街角的面馆亮着一盏暖融融的灯。",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/3.mp4",
+          "type": "video",
+          "start_sec": 2.5
+        }
+      },
+      {
+        "index": 4,
+        "text": "放眼望去，小店不大，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/4.mp4",
+          "type": "video",
+          "start_sec": 4.0
+        }
+      },
+      {
+        "index": 5,
+        "text": "却在冷清的夜色里显得格外温馨，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/5.mp4",
+          "type": "video",
+          "start_sec": 4.0
+        }
+      },
+      {
+        "index": 6,
+        "text": "成了晚归之人的一处避风港。",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/6.mp4",
+          "type": "video",
+          "start_sec": 20.0
+        }
+      },
+      {
+        "index": 7,
+        "text": "细看，大锅里的骨汤咕嘟咕嘟持续翻滚，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/7.mp4",
+          "type": "video",
+          "start_sec": 8.022
+        }
+      },
+      {
+        "index": 8,
+        "text": "手工面条下入锅中，在沸水里轻轻起伏。",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/8.mp4",
+          "type": "video",
+          "start_sec": 2.88
+        }
+      },
+      {
+        "index": 9,
+        "text": "一碗碗热气腾腾的面食被端上桌，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/9.mp4",
+          "type": "video",
+          "start_sec": 4.0
+        }
+      },
+      {
+        "index": 10,
+        "text": "升腾的白雾裹着鲜香，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/10.mp4",
+          "type": "video",
+          "start_sec": 8.8
+        }
+      },
+      {
+        "index": 11,
+        "text": "瞬间驱散了深夜的寒意。",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/11.mp4",
+          "type": "video",
+          "start_sec": 12.505
+        }
+      },
+      {
+        "index": 12,
+        "text": "加班至深夜的打工人、",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/12.mp4",
+          "type": "video",
+          "start_sec": 3.36
+        }
+      },
+      {
+        "index": 13,
+        "text": "独自在外打拼的异乡人安静坐在桌前，",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/13.mp4",
+          "type": "video",
+          "start_sec": 4.5
+        }
+      },
+      {
+        "index": 14,
+        "text": "低头嗦面、小口喝汤。",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/14.mp4",
+          "type": "video",
+          "start_sec": 3.84
+        }
+      },
+      {
+        "index": 15,
+        "text": "一口热食下肚，一路奔波的疲惫、",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/15.mp4",
+          "type": "video",
+          "start_sec": 0.0
+        }
+      },
+      {
+        "index": 16,
+        "text": "独处异乡的孤单，都在这一碗面的温度里慢慢消散。",
+        "media": {
+          "url": "https://your-bucket.oss-cn-hangzhou.aliyuncs.com/flow-b/source_media/16.mp4",
+          "type": "video",
+          "start_sec": 2.0
+        }
+      }
+    ]
+  },
+  "visual_preview": {
+    "resolution": {
+      "mode": "1080x1920"
+    },
+    "subtitle_style": {
+      "font_name": "思源黑体",
+      "font_scale": 1.0,
+      "y_offset": 0
+    },
+    "preview_segment_index": 1
+  },
+  "compose_run": {
+    "subtitle_mode": "hard",
+    "reuse_intermediates": true,
+    "cleanup_scratch_on_success": true
+  }
+}

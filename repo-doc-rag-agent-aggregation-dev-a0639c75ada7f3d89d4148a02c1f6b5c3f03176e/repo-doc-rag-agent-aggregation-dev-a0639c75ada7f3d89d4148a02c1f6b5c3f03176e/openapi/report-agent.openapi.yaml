@@ -1,0 +1,199 @@
+openapi: 3.1.0
+info:
+  title: rag-agent
+  version: 0.1.0
+paths:
+  /agent/v1/chat/completions:
+    post:
+      summary: Chat Completions
+      operationId: chat_completions_agent_v1_chat_completions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    ChatRequest:
+      properties:
+        session_id:
+          type: string
+          title: Session Id
+        user_id:
+          type: string
+          title: User Id
+        kb_id:
+          type: string
+          title: Kb Id
+        query:
+          type: string
+          title: Query
+        history:
+          items:
+            $ref: '#/components/schemas/HistoryItem'
+          type: array
+          title: History
+        stream:
+          type: boolean
+          title: Stream
+          default: true
+        doc_ids:
+          items:
+            type: string
+          type: array
+          title: Doc Ids
+        temp_doc_ids:
+          items:
+            type: string
+          type: array
+          title: Temp Doc Ids
+        retrieval_config:
+          $ref: '#/components/schemas/RetrievalConfig'
+        generation_config:
+          $ref: '#/components/schemas/GenerationConfig'
+        report_context:
+          $ref: '#/components/schemas/ReportContext'
+      type: object
+      required:
+      - session_id
+      - user_id
+      - kb_id
+      - query
+      title: ChatRequest
+    GenerationConfig:
+      properties:
+        temperature:
+          type: number
+          maximum: 1
+          minimum: 0
+          title: Temperature
+          default: 0.7
+        max_tokens:
+          type: integer
+          maximum: 32768
+          minimum: 1
+          title: Max Tokens
+          default: 4096
+        enable_images:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enable Images
+        image_api_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Api Key
+        image_tenant_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Tenant Code
+      type: object
+      title: GenerationConfig
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HistoryItem:
+      properties:
+        role:
+          type: string
+          enum:
+          - user
+          - assistant
+          title: Role
+        content:
+          type: string
+          title: Content
+      type: object
+      required:
+      - role
+      - content
+      title: HistoryItem
+    ReportContext:
+      properties:
+        current_outline:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Current Outline
+        outline_confirmed:
+          type: boolean
+          title: Outline Confirmed
+          default: false
+        current_report:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Current Report
+      type: object
+      title: ReportContext
+    RetrievalConfig:
+      properties:
+        top_k:
+          type: integer
+          maximum: 20
+          minimum: 1
+          title: Top K
+          default: 5
+        search_mode:
+          type: string
+          enum:
+          - hybrid
+          - keyword
+          - semantic
+          title: Search Mode
+          default: hybrid
+      type: object
+      title: RetrievalConfig
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

@@ -1,0 +1,30 @@
+version: 2
+skills:
+  - id: gzh_design
+    path: gzh_design
+    version: project-adapted-v2
+    summary: GZH 六套完整主题、富组件语义、配方和公众号 HTML 兼容规则。
+    allowed_nodes: [render_html]
+    entrypoint: SKILL.md
+    capabilities: [theme_policy, component_policy, html_validation]
+    reference_allowlist: [references/*.md]
+    max_file_bytes: 131072
+    max_total_bytes: 524288
+    source:
+      repository: https://github.com/isjiamu/gzh-design-skill
+      commit: ba1f4175519b481cb3566616c9e5178705067904
+      adapted_at: "2026-08-21"
+  - id: xiaowan_layout
+    path: xiaowan_layout
+    version: project-adapted-v2
+    summary: 正文冻结、图片证据、强调密度和移动端验收 policy。
+    allowed_nodes: [render_html]
+    entrypoint: SKILL.md
+    capabilities: [content_freeze, image_evidence, mobile_validation]
+    reference_allowlist: [references/*.md]
+    max_file_bytes: 65536
+    max_total_bytes: 262144
+    source:
+      repository: https://github.com/cyberxiaowan/xiaowan-wechat-layout-skill
+      commit: 5a96543a5f47c0f82f74e4ce5041fbe6f6b57c45
+      adapted_at: "2026-08-21"

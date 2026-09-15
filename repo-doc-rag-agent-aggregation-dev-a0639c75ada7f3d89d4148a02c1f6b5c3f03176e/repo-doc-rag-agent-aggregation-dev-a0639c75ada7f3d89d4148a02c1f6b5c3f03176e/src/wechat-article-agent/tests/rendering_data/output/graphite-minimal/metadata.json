@@ -1,0 +1,19 @@
+{
+  "theme_id": "graphite-minimal",
+  "theme_version": "1",
+  "theme_source": "gzh-design@ba1f417 theme-graphite-minimal adapted with permission",
+  "renderer_version": "deterministic-v1",
+  "input_sha256": {
+    "article.md": "d0eb7595e68d688fae1b8bd1e533593c517f741b79ccbee842b1131b726a7633",
+    "images.json": "8c85fa93a09296049ff5170a707811e3a9d9b6bdb18a46314f1bc766583617fd",
+    "task_spec.json": "da475db5b6b3a5064b05c1ba09353e1dfaddaa8aad2b003610d5c7b465d845eb"
+  },
+  "timings_ms": {
+    "select_theme": 0.012,
+    "attempt_1_render_markdown": 7.377,
+    "attempt_1_validate_html": 3.317
+  },
+  "fallback_used": false,
+  "fallback_reason": null,
+  "deterministic": true
+}

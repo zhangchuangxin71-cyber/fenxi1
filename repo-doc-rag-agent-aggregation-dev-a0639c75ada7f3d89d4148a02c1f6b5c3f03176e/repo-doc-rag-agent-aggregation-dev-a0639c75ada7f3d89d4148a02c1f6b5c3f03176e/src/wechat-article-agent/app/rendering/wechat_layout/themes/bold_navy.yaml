@@ -1,0 +1,9 @@
+id: bold-navy
+version: "1"
+label: 商务深蓝
+source: "wewrite@b998de8 adapted"
+suitable_for: [商业, 金融, 行业分析]
+colors: {text: "#263445", heading: "#10233F", muted: "#6B7788", primary: "#174A7E", secondary: "#2F6FA6", accent: "#C79A45", background: "#FFFFFF", surface: "#F2F6FA", border: "#C9D8E7", code_background: "#172338"}
+typography: {body_size: "16px", body_line_height: "1.82", h1_size: "26px", h2_size: "20px", h3_size: "17px", caption_size: "12px", letter_spacing: "0"}
+spacing: {content_padding: "0 18px", paragraph_margin: "0 0 18px", section_margin: "44px 0 22px"}
+variants: {profile: navy, blockquote: card, list: numbered, code: dark}

@@ -1,0 +1,47 @@
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+.venv
+venv
+env
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+
+# 运行时数据（compose 中 bind mount）
+workspaces
+test_output
+
+# 字体体积大，compose 中 bind mount
+fonts
+
+# 本地素材与流水线产物
+source_media
+audio
+temp
+clip
+cache
+data/images
+data/videos
+data/indexes
+data/logs
+data/audio
+
+# 测试与文档（不进镜像）
+tests
+docs
+
+# 媒体与日志
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
+*.log

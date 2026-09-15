@@ -1,0 +1,9 @@
+id: professional-clean
+version: "1"
+label: 专业清朗
+source: "wewrite@b998de8 adapted"
+suitable_for: [企业, 科技, 政策, 通用]
+colors: {text: "#263238", heading: "#102A25", muted: "#6B7280", primary: "#16856B", secondary: "#2CA58D", accent: "#D5A62A", background: "#FFFFFF", surface: "#F3F8F6", border: "#CFE3DC", code_background: "#F2F5F4"}
+typography: {body_size: "16px", body_line_height: "1.85", h1_size: "26px", h2_size: "20px", h3_size: "17px", caption_size: "12px", letter_spacing: "0"}
+spacing: {content_padding: "0 18px", paragraph_margin: "0 0 18px", section_margin: "44px 0 22px"}
+variants: {profile: professional, blockquote: subtle, list: marker, code: light}

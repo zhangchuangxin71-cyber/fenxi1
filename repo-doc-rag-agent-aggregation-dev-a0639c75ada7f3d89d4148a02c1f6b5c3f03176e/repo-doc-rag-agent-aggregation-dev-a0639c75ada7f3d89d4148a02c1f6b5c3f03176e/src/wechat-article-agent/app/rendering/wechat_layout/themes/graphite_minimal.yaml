@@ -1,0 +1,9 @@
+id: graphite-minimal
+version: "1"
+label: 石墨极简
+source: "gzh-design@ba1f417 theme-graphite-minimal adapted with permission"
+suitable_for: [设计, 科技评论, 专业观点, 高端品牌]
+colors: {text: "#52525B", heading: "#27272A", muted: "#71717A", primary: "#52525B", secondary: "#3F3F46", accent: "#F97316", background: "#FFFFFF", surface: "#FAFAFA", border: "#E4E4E7", code_background: "#F4F4F5"}
+typography: {body_size: "15px", body_line_height: "1.8", h1_size: "24px", h2_size: "18px", h3_size: "16px", caption_size: "11px", letter_spacing: "0.3px"}
+spacing: {content_padding: "0 10px", paragraph_margin: "0 0 18px", section_margin: "56px 0 24px"}
+variants: {profile: graphite_minimal, blockquote: line, list: marker, code: light}

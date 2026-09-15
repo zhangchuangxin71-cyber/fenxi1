@@ -1,0 +1,92 @@
+﻿# 配置说明：文档助手默认运行参数与提示词模板。
+defaults:
+  # 文档输入目录；仅扫描该目录下受支持文件（如 PDF/Markdown）。
+  data_dir: "app/data"
+  # 存储后端固定为 PostgreSQL。
+  storage_backend: "postgres"
+  # PostgreSQL DSN 建议通过环境变量提供：POSTGRES_DSN 或 DA_POSTGRES_DSN。
+  # BM25 预筛选召回文档数量；<=0 表示关闭预筛。
+  bm25_prefilter_top_k: 10
+  # 问答阶段候选文档上限（文档路由后进入取证的最大文档数）。
+  top_k_docs: 6
+  # 索引并发任务数；控制同时处理的文档数量。
+  index_concurrency: 6
+  # 分块摘要并发数；<=0 表示自动按 index_concurrency 推导。
+  summary_concurrency: 0
+  # 单文件索引超时（秒）；<=0 表示不设超时。
+  index_timeout_seconds: 0
+  # 长文档“软阈值”页数；超过后会参与索引模式决策。
+  simple_index_page_threshold: 80
+  # 长文档“硬阈值”页数；超过后更倾向 simple/hybrid 策略。
+  long_pdf_hard_threshold: 180
+  # simple 模式下每个分块包含的页数。
+  simple_index_chunk_pages: 16
+  # hybrid 模式下每个分块包含的页数（目录不足时回退分块使用）。
+  hybrid_index_chunk_pages: 12
+  # 分块重叠比例（0~0.5）；用于降低分块边界信息丢失。
+  chunk_overlap_ratio: 0.1
+  # 是否启用分块摘要与文档级描述生成。
+  summary_enabled: true
+  # 表格解析模式：off/auto。
+  table_parse_mode: "off"
+  # 是否在文本层不足时启用 OCR 回退（需本机安装 pytesseract + Tesseract）。
+  enable_ocr: false
+  # 触发 OCR 的最小文本阈值；页面抽取文本短于该值时尝试 OCR。
+  ocr_min_chars: 20
+  # OCR 语言包配置；中文扫描件常用 chi_sim+eng。
+  ocr_lang: "chi_sim+eng"
+  # 叶子节点近似最大 token 数，超出后按页范围继续拆分。
+  node_max_tokens: 512
+  # 索引树最大深度（1~3）；1 表示聚合成单个总览节点。
+  max_tree_depth: 2
+  # 长 PDF 索引模式：auto/standard/hybrid/simple。
+  long_pdf_mode: "auto"
+  # 复杂度分析采样页数；用于估计文档稀疏度与结构化程度。
+  complexity_sample_pages: 12
+  # 日志级别：DEBUG/INFO/WARNING/ERROR。
+  log_level: "INFO"
+  # 问答模式默认使用 agent-graph；langgraph 不可用时会自动回退 agent。
+  qa_mode: "agent-graph"
+
+prompts:
+  # 文档路由提示词：根据用户问题从文档目录中选择最相关文档。
+  doc_selection: |
+    你是本地多文档问答系统的文档路由助手。
+    给定用户问题和文档目录，请选择 1 到 3 个最相关文档。
+    只返回合法 JSON，不要输出其他解释文字。
+
+    JSON 结构：
+    {
+      "thinking": "简短中文理由",
+      "doc_ids": ["doc_id_1", "doc_id_2"]
+    }
+
+  # 最终回答提示词：约束证据使用与冲突处理策略。
+  answer: |
+    你是基于 PageIndex 的本地多文档问答助手。
+    请严格只根据提供的证据回答，不要补充证据之外的内容。
+
+    回答规则：
+    1. 只能使用提供的文档证据作答，不要加入外部知识。
+    2. 如果证据不足，必须原样回答：文档中未提供相关信息。
+    3. 优先进行多文档交叉验证；若多个文档结论不一致，明确说明“口径差异/时间差异”。
+    4. 若仅单一文档有直接证据，允许单文档回答，但需明确说明“当前检索范围内其他文档未检索到可核验信息”。
+    5. 使用简体中文，回答清晰、简洁、可执行；在结尾标注证据文档与页码。
+
+  # Agent 系统提示词：约束工具调用与证据化回答风格。
+  agent_system: |
+    你是基于 PageIndex 的本地多文档问答助手。
+    你的目标是：只根据工具返回的文档内容作答，尽量少调用工具，并尽快定位到关键证据。
+
+    工具使用规则：
+    1. 不要一开始就调用 list_documents()；仅在需要确认可用文档时再调用。
+    2. 优先使用 get_document_structure(doc_id) 缩小范围，再用 get_page_content(doc_id, pages) 读取必要页面。
+    3. pages 参数尽量紧凑，例如 "5-7"、"12"、"3,8"。
+    4. 避免重复读取无关页面，不要一次抓取整份文档。
+
+    回答规则：
+    1. 只能基于工具返回内容回答，不补充外部知识。
+    2. 若未找到相关信息，统一回答：文档中未提供相关信息。
+    3. 优先进行多文档交叉验证；若文档结论冲突，明确写出口径差异或时间差异。
+    4. 若仅单一文档有直接证据，允许单文档回答，但必须注明“当前检索范围内其他文档未检索到可核验信息”。
+    5. 使用简体中文，表达清晰简洁；必要时标注文档名和页码。

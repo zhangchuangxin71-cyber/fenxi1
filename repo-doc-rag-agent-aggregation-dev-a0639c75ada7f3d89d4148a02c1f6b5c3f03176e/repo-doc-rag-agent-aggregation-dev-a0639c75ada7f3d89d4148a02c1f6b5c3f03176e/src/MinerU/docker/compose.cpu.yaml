@@ -1,0 +1,42 @@
+services:
+  mineru-api-cpu:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: mineru-cpu:dev
+    container_name: mineru-api-cpu
+    shm_size: 8g
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: ["mineru-api", "--host", "0.0.0.0", "--port", "8000", "--allow-public-http-client"]
+    environment:
+      MINERU_MODEL_SOURCE: modelscope
+      MINERU_DEVICE_MODE: cpu
+      MINERU_API_MAX_CONCURRENT_REQUESTS: "8"
+      MINERU_API_TASK_RETENTION_SECONDS: "3600"
+      MINERU_API_TASK_CLEANUP_INTERVAL_SECONDS: "300"
+      MINERU_PDF_RENDER_THREADS: "4"
+      MINERU_PROCESSING_WINDOW_SIZE: "16"
+      MINERU_INTRA_OP_NUM_THREADS: "4"
+      MINERU_INTER_OP_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+      OPENBLAS_NUM_THREADS: "4"
+      MINERU_API_OUTPUT_ROOT: /data/output/_api_tasks
+      JINA_API_KEY: "${JINA_API_KEY:-}"
+      JINA_READER_BASE_URL: "${JINA_READER_BASE_URL:-https://r.jina.ai/}"
+      CUDA_VISIBLE_DEVICES: ""
+      NVIDIA_VISIBLE_DEVICES: void
+      NVIDIA_DRIVER_CAPABILITIES: ""
+    volumes:
+      - ../.mineru-home:/root
+      - ../output_cpu:/data/output
+      - ../demo:/data/demo:ro
+      - ../mineru:/app/mineru:ro
+      - ../../:/workspace:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s

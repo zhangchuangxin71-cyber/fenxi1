@@ -1,0 +1,9 @@
+id: warm-editorial
+version: "1"
+label: 温暖编辑
+source: "wewrite@b998de8 + xiaowan@5a96543 visual rules"
+suitable_for: [文化, 人物, 生活方式]
+colors: {text: "#3F3A35", heading: "#28231F", muted: "#82776D", primary: "#9A5E3A", secondary: "#B97950", accent: "#C7A15A", background: "#FFFFFF", surface: "#FBF7F3", border: "#E8D9CD", code_background: "#F5EFEA"}
+typography: {body_size: "16px", body_line_height: "1.92", h1_size: "26px", h2_size: "20px", h3_size: "17px", caption_size: "12px", letter_spacing: "0"}
+spacing: {content_padding: "0 18px", paragraph_margin: "0 0 21px", section_margin: "50px 0 24px"}
+variants: {profile: editorial, blockquote: editorial, list: marker, code: light}

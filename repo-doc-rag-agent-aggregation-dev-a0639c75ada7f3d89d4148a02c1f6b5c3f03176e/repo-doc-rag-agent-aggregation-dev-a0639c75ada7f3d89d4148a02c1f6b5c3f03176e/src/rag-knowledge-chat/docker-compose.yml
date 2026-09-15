@@ -1,0 +1,19 @@
+services:
+  rag-knowledge-chat:
+    build: .
+    image: rag-knowledge-chat:latest
+    container_name: rag-knowledge-chat
+    env_file:
+      - .env
+    environment:
+      PORT: "8130"
+    ports:
+      - "${APP_HOST:-127.0.0.1}:${APP_PORT:-8130}:8130"
+    networks:
+      - pageindex
+    restart: unless-stopped
+
+networks:
+  pageindex:
+    external: true
+    name: "${RAG_DOCKER_NETWORK:-pageindex}"

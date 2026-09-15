@@ -1,0 +1,69 @@
+# --- 密钥与本地环境（勿上传）---
+.env
+.env.*
+!.env.example
+
+# --- 运行时数据（视频缓存 / 切割产物，勿上传）---
+data/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# --- 本地实测样例 / 非交付文档 ---
+docs/_e2e_samples/
+docs/参考.md
+docs/视频切片可行性方案.md
+
+# --- 本机运维 / 契约检查脚本（非 Docker 运行所需）---
+scripts/check_access.py
+scripts/check_openapi_drift.py
+scripts/setup_postgres.sh
+scripts/__pycache__/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- 日志 / 临时 ---
+*.log
+*.tmp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# --- IDE（本机配置，勿上传）---
+.vscode/
+.idea/
+*.code-workspace
+
+# --- 本机裸跑脚本（交付以 Docker 为准）---
+run.sh
+run_worker.sh
+restart.sh
+
+# --- 前端（源码上传；依赖与构建产物忽略）---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/reference-ui/node_modules/
+frontend/reference-ui/dist/
+frontend/.env
+frontend/.env.local
+frontend/**/*.tsbuildinfo
+frontend/**/*partial*
+frontend/**/App.tsx.partial*

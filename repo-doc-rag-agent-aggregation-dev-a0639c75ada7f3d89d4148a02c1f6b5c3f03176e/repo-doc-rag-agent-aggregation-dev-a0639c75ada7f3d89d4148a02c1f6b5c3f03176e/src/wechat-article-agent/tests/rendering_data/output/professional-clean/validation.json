@@ -1,0 +1,12 @@
+{
+  "valid": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "source_chars": 2743,
+    "rendered_chars": 2743,
+    "images": 4,
+    "leaf_spans": 29,
+    "warnings": 0
+  }
+}

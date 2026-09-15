@@ -1,0 +1,9 @@
+id: olive-journal
+version: "1"
+label: 橄榄手记
+source: "gzh-design@ba1f417 theme-olive-journal adapted with permission"
+suitable_for: [案例复盘, 系统说明, 观察手记]
+colors: {text: "#3F4438", heading: "#252A20", muted: "#777B6A", primary: "#667044", secondary: "#87905F", accent: "#B19A5A", background: "#FFFFFF", surface: "#F5F4EC", border: "#D8D6C6", code_background: "#EEEDE5"}
+typography: {body_size: "15px", body_line_height: "1.88", h1_size: "25px", h2_size: "19px", h3_size: "16px", caption_size: "11px", letter_spacing: "0.2px"}
+spacing: {content_padding: "0 17px", paragraph_margin: "0 0 19px", section_margin: "50px 0 24px"}
+variants: {profile: olive_journal, blockquote: editorial, list: card, code: light}

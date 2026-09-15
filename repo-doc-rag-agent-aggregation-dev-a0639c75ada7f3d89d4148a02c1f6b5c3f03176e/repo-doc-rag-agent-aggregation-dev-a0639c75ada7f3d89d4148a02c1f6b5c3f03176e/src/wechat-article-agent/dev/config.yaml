@@ -1,0 +1,9 @@
+agent_base_url: http://127.0.0.1:8240
+user_id: wechat-article-agent-dev-user
+kb_id: wechat-article-agent-dev-kb
+session_id: wechat-article-agent-dev-session
+
+# agent_base_url: http://39.108.184.150:8140
+# user_id: "121175683534688256"
+# kb_id: T00000001
+# session_id: agent:209620289435209728

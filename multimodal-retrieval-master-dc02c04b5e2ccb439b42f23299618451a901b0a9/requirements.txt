@@ -1,0 +1,32 @@
+# 本仓库统一依赖（CPU 版，embedding API + 本地检索）
+# Python 3.10+。已在 cliptrain（torch 2.11.0+cpu）环境核对。
+# 安装：pip install -r requirements.txt
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Web API
+fastapi==0.136.1
+uvicorn==0.46.0
+pydantic==2.13.4
+requests==2.33.1
+python-dotenv==1.1.0
+
+# 数值与图像
+numpy==2.2.6
+pillow==12.2.0
+opencv-python==4.10.0.84
+
+# 模型推理（CPU）
+torch==2.11.0+cpu
+transformers==5.8.0
+huggingface-hub==1.14.0
+
+# 向量库与对象存储
+pymilvus==3.0.0
+oss2==2.19.1
+
+# 本地检索（picture/、video_retrieval/）
+scikit-learn==1.7.2
+joblib==1.5.3
+openai==2.30.0
+tqdm==4.67.3

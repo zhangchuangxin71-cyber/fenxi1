@@ -1,0 +1,52 @@
+﻿# Local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+config/secret*
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Runtime outputs
+logs/
+.cache/
+app/workspace/
+uploads/
+output/
+
+# Large/local data files
+tests/fixtures/
+data/
+models/
+checkpoints/
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.pkl
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/

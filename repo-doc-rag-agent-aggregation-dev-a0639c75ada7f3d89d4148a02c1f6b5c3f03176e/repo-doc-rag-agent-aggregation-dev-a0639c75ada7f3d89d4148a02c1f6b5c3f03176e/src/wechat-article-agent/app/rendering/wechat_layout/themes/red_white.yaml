@@ -1,0 +1,9 @@
+id: red-white
+version: "1"
+label: 红白重点
+source: "gzh-design@ba1f417 theme-red-white adapted with permission"
+suitable_for: [政策重点, 重要解读, 行动提醒]
+colors: {text: "#3B3030", heading: "#241818", muted: "#806E6E", primary: "#C62828", secondary: "#E14B4B", accent: "#F2C14E", background: "#FFFFFF", surface: "#FFF5F5", border: "#F1C7C7", code_background: "#F8EEEE"}
+typography: {body_size: "16px", body_line_height: "1.85", h1_size: "26px", h2_size: "20px", h3_size: "17px", caption_size: "12px", letter_spacing: "0"}
+spacing: {content_padding: "0 18px", paragraph_margin: "0 0 18px", section_margin: "46px 0 23px"}
+variants: {profile: red_white, blockquote: card, list: numbered, code: light}
