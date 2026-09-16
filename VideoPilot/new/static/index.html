@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#102625" />
+    <meta name="description" content="使用多模态分析发现视频高光，或按描述查找并截取指定内容。" />
+    <title>ClipTalk</title>
+    <link rel="icon" type="image/png" href="/static/assets/cliptalk-icon.png?v=20260812-transparent-1" />
+    <link rel="preload" href="/static/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <script src="/static/theme-runtime.js?v=20260910-reference-light-1"></script>
+    <link rel="stylesheet" href="/static/generative-loaders.css?v=20260909-theme-cleanup-1" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260915-workflow-instruction-1" />
+    <link rel="stylesheet" href="/static/typography.css?v=20260910-typography-1" />
+    <link rel="stylesheet" href="/static/interaction-surfaces.css?v=20260909-theme-cleanup-1" />
+    <link rel="stylesheet" href="/static/app-shell.css?v=20260915-settings-system-1" />
+    <link rel="stylesheet" href="/static/editing-workspace.css?v=20260911-user-journey-1" />
+    <link rel="stylesheet" href="/static/agent-workspace.css?v=20260915-understanding-card-2" />
+    <link rel="stylesheet" href="/static/secondary-editor-focus.css?v=20260911-light-media-2" />
+    <link rel="stylesheet" href="/static/theme.css?v=20260915-capability-picker-1" />
+    <link rel="stylesheet" href="/static/cliptalk-tokens.css?v=20260910-ui-consistency-3" />
+    <link rel="stylesheet" href="/static/workspace-components.css?v=20260911-user-journey-1" />
+    <link rel="stylesheet" href="/static/workbench.css?v=20260916-dark-workbench-1" />
+    <link rel="stylesheet" href="/static/panel-system.css?v=20260915-panel-contract-1" />
+  </head>
+  <body data-shell-view="home" data-shell-mode="page" data-sidebar-overlay="false">
+    <a class="skip-link" href="#workspace">跳到剪辑工作区</a>
+    <div class="ambient-grid" aria-hidden="true"></div>
+    <button id="mobileNavigationToggle" type="button" aria-controls="appSidebar" aria-expanded="false">菜单</button>
+    <aside id="appSidebar" class="app-sidebar" aria-label="ClipTalk 主导航">
+      <header class="app-sidebar-brand">
+        <button type="button" data-shell-view="home" aria-label="返回首页" title="首页">
+          <img src="/static/assets/cliptalk-director-icon.png?v=20260812-brand-unified-1" alt="" aria-hidden="true" />
+          <span class="app-sidebar-brand-wordmark" aria-hidden="true"><b>Clip</b><i>Talk</i></span>
+        </button>
+      </header>
+      <nav class="app-sidebar-primary" aria-label="主要功能">
+        <button id="sidebarCurrentTask" class="app-sidebar-action app-sidebar-current" type="button" data-shell-view="workspace" aria-label="当前任务" title="暂无当前任务" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v13H4zM4 9.5h16M7.5 13.5h2.5M12.5 12v4.5M16 13.5h1.5" /></svg><span>当前任务</span><i class="app-sidebar-current-dot" aria-hidden="true"></i>
+        </button>
+        <button id="sidebarNewTask" class="app-sidebar-action app-sidebar-new" type="button" aria-label="新建任务" title="新建任务">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg><span>新建</span>
+        </button>
+        <button id="sidebarHistoryToggle" class="app-sidebar-action app-sidebar-tasks" type="button" aria-label="打开任务列表" aria-controls="sidebarHistoryDrawer" aria-expanded="false" title="任务列表">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12v14H6zM3.5 7.5H6M3.5 7.5v12h12v-1M9 8.5h6M9 11.5h6M9 14.5h4" /></svg><span>任务</span><b id="sidebarTaskCountBadge" class="hidden">0</b>
+        </button>
+        <button class="app-sidebar-action app-sidebar-outputs" type="button" data-shell-view="library" aria-label="打开成片库" title="成片库">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M8 5v4M16 5v4M9.5 12l5 2.5-5 2.5z" /></svg><span>成片</span><b id="sidebarOutputCount" class="hidden">0</b>
+        </button>
+        <div class="app-sidebar-utility" aria-label="系统功能">
+          <button id="themeToggle" class="app-sidebar-action app-sidebar-theme" type="button" aria-label="切换到浅色主题" aria-pressed="true" title="切换到浅色主题">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><g class="theme-icon-dark"><path d="M20 14.2A8.3 8.3 0 0 1 9.8 4a8.3 8.3 0 1 0 10.2 10.2z" /></g><g class="theme-icon-light"><circle cx="12" cy="12" r="3.5" /><path d="M12 2.5v2M12 19.5v2M4 4l1.5 1.5M18.5 18.5 20 20M2.5 12h2M19.5 12h2M4 20l1.5-1.5M18.5 5.5 20 4" /></g></svg><span>深色</span>
+          </button>
+          <button id="engineState" class="app-sidebar-action app-sidebar-service" type="button" data-shell-action="status" aria-label="查看服务状态" title="正在检查服务状态">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12h4l2-4 3.2 8 2.1-4H20.5M6 5.5h12M6 18.5h12" /></svg><span>检查服务</span><i aria-hidden="true"></i>
+          </button>
+          <button id="settingsButton" class="app-sidebar-action app-sidebar-settings" type="button" data-shell-view="settings" aria-label="打开设置" title="设置">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6l-.04.08H9.92L9.88 20a1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1l-.08-.04V9.92L4 9.88a1.7 1.7 0 0 0 .6-1A1.7 1.7 0 0 0 4.26 7l-.06-.06L7.06 4.08l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6l.04-.08h4.04l.04.08a1.7 1.7 0 0 0 1 .6A1.7 1.7 0 0 0 17 4.26l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9c.1.4.31.75.6 1l.08.04v4.04L20 14.12a1.7 1.7 0 0 0-.6.88z" /></svg><span>设置</span>
+          </button>
+        </div>
+      </nav>
+    </aside>
+    <section id="sidebarHistoryDrawer" class="app-sidebar-drawer" role="dialog" aria-modal="true" aria-labelledby="sidebarHistoryTitle" aria-hidden="true" inert>
+      <header class="app-sidebar-drawer-header">
+        <div><small>工作区任务</small><h2 id="sidebarHistoryTitle">任务列表 <span id="sidebarTaskCount">0</span></h2></div>
+        <button id="sidebarHistoryClose" type="button" aria-label="关闭任务列表" title="关闭">×</button>
+      </header>
+      <section class="app-sidebar-catalog">
+        <div class="app-sidebar-search-row">
+          <label><span class="sr-only">搜索任务</span><i aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5" /><path d="m15 15 4.5 4.5" /></svg></i><input id="sidebarTaskSearch" type="search" maxlength="120" placeholder="搜索视频或任务" autocomplete="off" /></label>
+        </div>
+        <div class="app-sidebar-filters" role="group" aria-label="任务状态筛选">
+          <button class="active" type="button" data-sidebar-filter="all" aria-pressed="true">全部</button>
+          <button type="button" data-sidebar-filter="active" aria-pressed="false">进行中</button>
+          <button type="button" data-sidebar-filter="action_required" aria-pressed="false">待确认</button>
+        </div>
+        <div id="sidebarHistoryList" class="app-sidebar-history" aria-live="polite"></div>
+        <button id="sidebarLoadMore" class="app-sidebar-load-more hidden" type="button">加载更多任务</button>
+      </section>
+    </section>
+    <button id="appSidebarScrim" class="app-sidebar-scrim hidden" type="button" aria-label="关闭任务列表"></button>
+    <main id="workspace" class="studio home-mode">
+      <section id="homeView" class="home-view" data-home-state="loading" aria-label="首页" aria-busy="true">
+        <header class="home-heading">
+          <div><small>ClipTalk 工作台</small><h1><span class="sr-only">开始剪辑 · </span>开始一个剪辑任务</h1><p>上传素材，描述想保留的内容。生成前可以检查计划，生成后可以继续在时间轴中调整。</p></div>
+          <div class="home-summary hidden" aria-label="工作区统计"><span><b id="homeAssetCount">0</b><small>个视频</small></span><span><b id="homeTaskCount">0</b><small>个任务</small></span><span><b id="homeOutputCount">0</b><small>条成片</small></span></div>
+        </header>
+        <section class="home-create-surface">
+          <button type="button" data-home-create><span class="home-create-surface-icon" data-ui-icon="film-slate" aria-hidden="true"></span><span><strong>创建剪辑任务</strong><small>选择视频并描述你想得到的结果</small></span><b data-ui-icon="arrow-right" aria-hidden="true"></b></button>
+        </section>
+        <section class="home-section"><div class="home-section-heading"><div><h2>任务动态</h2><span>查看处理进度、待确认内容和可恢复的任务</span></div></div>
+          <div id="homeTaskGrid" class="home-task-grid"><div class="home-loading-card" role="status" aria-label="正在加载当前任务"><span class="home-loading-line home-loading-line-title" aria-hidden="true"></span><span class="home-loading-line" aria-hidden="true"></span><strong class="sr-only">正在加载当前任务</strong></div></div>
+        </section>
+      </section>
+      <nav id="ctCompactWorkspaceNav" hidden inert class="ct-compact-workspace-nav" role="tablist" aria-label="工作区视图">
+        <button type="button" role="tab" data-ct-compact-view="assistant" aria-controls="assistantPanel" aria-selected="false">对话</button>
+        <button type="button" role="tab" data-ct-compact-view="preview" aria-controls="reviewView" aria-selected="true">预览</button>
+        <button type="button" role="tab" data-ct-compact-view="review" aria-controls="reviewRail" aria-selected="false">审核</button>
+      </nav>
+      <aside id="assistantPanel" class="chat-panel glass-panel">
+        <header class="panel-header">
+          <div class="director"><img class="director-brand-icon" src="/static/assets/cliptalk-director-icon.png?v=20260812-1" alt="" aria-hidden="true" /><div><strong>剪辑助理</strong><small><i id="directorDot"></i><b id="directorState">等待素材</b></small></div></div>
+          <button id="assistantPanelToggle" class="assistant-panel-toggle" type="button" aria-expanded="true" aria-controls="chatMessages" title="收起 AI 助手"><span aria-hidden="true">‹</span><b>助手</b></button>
+          <ol id="directorStageNav" class="director-stage-flow" aria-label="智能剪辑流程">
+            <li data-director-flow="brief"><span class="stage-segment" aria-hidden="true"><i></i></span><div><strong>准备</strong><small>确认要求并准备媒体</small></div></li>
+            <li data-director-flow="analysis"><span class="stage-segment" aria-hidden="true"><i></i></span><div><strong>AI 分析</strong><small>发现并整理高光事件</small></div></li>
+            <li data-director-flow="events"><span class="stage-segment" aria-hidden="true"><i></i></span><div><strong>审核结果</strong><small>确认事件或内容片段</small></div></li>
+            <li data-director-flow="compose"><span class="stage-segment" aria-hidden="true"><i></i></span><div><strong>生成成片</strong><small>合成、预览并下载</small></div></li>
+          </ol>
+        </header>
+        <section id="directorTaskSummary" class="director-task-summary" aria-live="polite">
+          <small>当前任务</small><strong>等待创建任务</strong><p>上传视频后，AI 会先确认你的剪辑目标。</p>
+        </section>
+
+        <section id="agentPlanDock" class="agent-plan-dock hidden" aria-live="polite" aria-label="当前 Agent 操作"></section>
+
+        <section id="chatMessages" class="chat-messages" aria-live="polite">
+          <article class="chat-message assistant">
+            <span class="avatar">AI</span>
+            <div class="bubble"><small>开始新任务</small><p>告诉我想保留什么；准备好视频后，我会先整理计划供你确认。</p></div>
+          </article>
+        </section>
+
+        <aside id="autoCompositionDock" class="auto-composition-dock hidden" aria-live="polite" aria-label="自动成片实时执行记录"></aside>
+
+        <section id="assistantActionDock" class="assistant-action-dock hidden" aria-live="polite" aria-label="当前处理方式"></section>
+
+        <button id="capabilityDrawerScrim" class="capability-drawer-scrim hidden" type="button" aria-label="关闭处理方式选择"></button>
+        <aside id="ctV4AssistantQuickStart" class="ct-v4-assistant-quick-start capability-drawer hidden" role="dialog" aria-hidden="true" aria-labelledby="capabilityDrawerTitle">
+          <header>
+            <div><small>剪辑能力</small><strong id="capabilityDrawerTitle">选择处理方式</strong></div>
+            <button id="capabilityDrawerClose" type="button" aria-label="关闭处理方式选择">×</button>
+          </header>
+          <section id="quickWorkflowPicker" class="quick-workflow-picker hidden" aria-label="选择剪辑能力"></section>
+        </aside>
+
+        <form id="chatForm" class="chat-composer">
+          <section id="contentSelectionBasket" class="content-selection-basket hidden" aria-live="polite"></section>
+          <div id="chatContextBar" class="chat-context-bar hidden" aria-label="本次对话引用的剪辑界面状态"></div>
+          <button id="composerSuggestion" class="composer-suggestion hidden" type="button" aria-label="使用推荐剪辑要求"></button>
+          <div class="chat-input-shell composer-homepage-beam" data-border-beam data-beam-size="md" data-beam-color="ocean" data-beam-theme="dark" data-beam-strength="0.56" data-beam-duration="3.8" data-beam-brightness="1.18" data-beam-saturation="1" data-beam-hue-range="22" data-beam-radius="12">
+            <textarea id="chatInput" maxlength="4000" rows="2" disabled placeholder="描述剪辑要求，或询问当前结果……"></textarea>
+            <div class="composer-toolbar" aria-label="输入工具栏">
+              <div class="composer-toolbar-left">
+                <div class="agent-skill-row"><button id="agentSkillMenuButton" type="button" aria-expanded="false" aria-controls="agentSkillMenu" title="调整剪辑方式"><span>执行设置</span><small>自动</small></button><div id="agentSkillMenu" class="agent-skill-menu hidden"><label><span>剪辑技能</span><select id="agentSkillSelect" aria-label="为本次目标指定 Skill"><option value="">自动选择</option></select></label><label><span>执行方式</span><select id="agentExecutionMode" aria-label="选择 Agent 执行方式"><option value="autonomous_review" selected>自动剪辑并预览</option><option value="stepwise_review">分步审核</option></select></label><button id="agentRegistryButton" type="button">管理 Skills / Plugins</button></div></div>
+                <button id="chatLegacyModeButton" class="quick-workflow-trigger hidden" type="button" aria-expanded="false" aria-controls="quickWorkflowPicker">选择处理方式</button>
+              </div>
+              <div class="composer-toolbar-right">
+                <button id="composerContextButton" class="composer-icon-button" type="button" title="引用当前画面或时间线状态" aria-label="引用当前画面或时间线状态">@</button>
+                <button id="composerMagicButton" class="composer-icon-button" type="button" title="整理需求模板（不会直接调用模型）" aria-label="整理需求模板">✦</button>
+                <button id="sendButton" type="submit" disabled title="发送" aria-label="发送"><span data-ui-icon="send" aria-hidden="true"></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="chat-compose-actions"><select id="chatComposeSubtitleMode" class="chat-compose-subtitle hidden" aria-label="合成字幕方式"><option value="none" selected>不添加字幕</option><option value="burn">添加 AI 字幕</option></select><button id="chatComposeButton" class="chat-compose-button hidden" type="button">✦ 开始合成</button><button id="chatComposeRecommendedButton" class="chat-compose-recommended hidden" type="button">按 AI 推荐事件合成（不使用时间轴选区）</button><button id="chatComposePlanButton" class="chat-compose-plan hidden" type="button">AI 智能规划</button></div>
+          <small>Enter 发送 · Shift+Enter 换行</small>
+        </form>
+      </aside>
+
+      <div class="panel-resizer panel-resizer-left hidden" role="separator" tabindex="-1" aria-label="调整对话面板宽度" aria-orientation="vertical" aria-valuemin="360" aria-valuemax="560" aria-valuenow="400" aria-hidden="true" title="拖动调整对话面板宽度，双击恢复默认"></div>
+
+      <section class="review-panel glass-panel">
+        <div id="uploadView" class="upload-view">
+          <div class="intro">
+            <p id="newTaskDraftStatus" class="new-task-draft-status" data-state="empty">等待添加素材</p>
+            <h1>添加视频，<br /><em>开始剪辑</em></h1>
+            <span>左侧描述目标，右侧添加素材。</span>
+          </div>
+          <form id="uploadForm" class="upload-card" onsubmit="return false">
+            <label class="drop-zone" id="dropZone">
+              <input id="videoInput" name="video" type="file" accept="video/mp4,video/quicktime,video/x-matroska,video/webm,.m4v,.avi" required />
+              <span class="drop-zone-add" aria-hidden="true"></span><strong id="fileLabel">拖入视频，或点击选择</strong><small>MP4 / MOV / MKV / WebM / M4V / AVI</small>
+              <progress id="uploadProgress" class="upload-progress" max="100" hidden aria-label="视频上传进度"></progress>
+            </label>
+            <div id="localPreviewPanel" class="media-metadata-probe hidden" hidden aria-hidden="true">
+              <video id="localPreviewVideo" preload="metadata" muted playsinline tabindex="-1"></video>
+            </div>
+          </form>
+          <section id="taskSetupView" class="task-setup-view hidden" aria-label="创建剪辑任务">
+            <header><div><small>设置剪辑任务</small><strong>描述目标、处理方式与素材范围</strong></div><span>确认计划后才开始处理素材</span></header>
+            <div id="taskSetupPortal" class="task-setup-portal"></div>
+          </section>
+        </div>
+
+        <div id="reviewView" class="review-view hidden">
+          <header class="review-header">
+            <div class="asset-heading"><span class="file-icon" data-ui-icon="film-slate" aria-hidden="true"></span><div><small id="reviewKicker">源视频</small><h2 id="reviewTitle">源视频</h2></div><span id="reviewTaskMode" class="task-mode-badge hidden"></span><span id="reviewStatus" class="review-status">等待分析</span></div>
+            <div id="workspaceFlowMount" class="workspace-flow-mount" aria-label="当前任务流程"></div>
+            <div class="asset-actions"><span id="assetDuration" class="asset-chip">时长 --:--</span><span id="assetResolution" class="asset-chip">分辨率 --</span><select id="videoViewSelect" class="video-view-select" aria-label="选择视频预览"><option value="source">源视频</option></select><button id="portraitPrecisionToggle" class="download-button portrait-precision-toggle hidden" type="button" aria-pressed="false" aria-controls="timelinePanel">精剪时间线</button><button id="secondaryEditCurrentButton" class="download-button secondary-edit-current-button hidden" type="button">精剪</button><button id="finalizePreviewButton" class="download-button finalize-preview-button hidden" type="button">生成成片</button><a id="downloadButton" class="download-button hidden" href="#">下载成片</a><details id="reviewMoreActions" class="review-more-actions"><summary aria-label="打开更多操作">更多</summary><div><button id="finalizeOneOffButton" class="download-button one-off-finalize-button hidden" type="button">保存并清理</button><a id="coverDownloadButton" class="download-button hidden" href="#">下载封面</a><a id="packageDownloadButton" class="download-button hidden" href="#">下载发布包</a><button id="subtitleButton" class="download-button hidden" type="button">下载字幕 SRT</button></div></details></div>
+            <div id="ctDeferredVersionActions" class="hidden" aria-hidden="true"><button id="coverIntroButton" class="download-button hidden" type="button">生成封面片头版</button></div>
+          </header>
+          <div id="headerVersionPicker" class="header-version-picker" role="tablist" aria-label="选择成片版本"></div>
+
+          <div id="reviewStage" class="review-stage">
+            <div class="viewer-shell" id="viewerShell" data-media-state="empty">
+              <div class="media-frame" id="mediaFrame">
+                <video id="mainVideo" preload="metadata" playsinline></video>
+                <span id="viewerBadge">源视频</span>
+                <div id="playerNotice" class="player-notice hidden" role="status"><span id="playerMediaLoader" class="player-media-loader hidden" data-generative-loader="image" data-loader-active="false" data-loader-variant="scan" data-loader-size="84" data-loader-radius="12" data-loader-label="正在准备视频预览"></span><strong>视频暂时无法播放</strong><p></p><button id="playerRetry" type="button">重新加载</button></div>
+              </div>
+              <div class="player-controls" aria-label="视频播放控制">
+                <div class="player-transport-group" role="group" aria-label="播放与片段跳转">
+                  <button id="playerPlay" class="player-primary-play" type="button" aria-label="播放" data-state="paused" data-tooltip="播放" ></button>
+                  <span class="player-segment-group hidden">
+                    <button id="playerPrevious" class="player-segment-nav" type="button" aria-label="跳转到上一段高光" aria-keyshortcuts="P" data-tooltip="上一段高光 · 只切换预览，不展开详情" disabled>‹</button>
+                    <button id="playerNext" class="player-segment-nav" type="button" aria-label="跳转到下一段高光" aria-keyshortcuts="N" data-tooltip="下一段高光 · 只切换预览，不展开详情" disabled>›</button>
+                  </span>
+                </div>
+                <div class="player-progress-group">
+                  <input id="playerSeek" class="player-seek" type="range" min="0" max="1000" value="0" aria-label="播放进度" />
+                  <span id="playerClock">00:00 / 00:00</span>
+                </div>
+                <div class="player-sound-group" role="group" aria-label="音量控制">
+                  <button id="playerMute" class="player-mute-button" type="button" aria-label="静音" aria-pressed="false" data-state="on" data-tooltip="静音">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path class="speaker-shape" d="M4 9h4l5-4v14l-5-4H4z"></path>
+                      <path class="sound-wave" d="M16 8.5a5.5 5.5 0 0 1 0 7"></path>
+                      <path class="sound-wave sound-wave-wide" d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+                      <path class="mute-slash" d="m4 4 16 16"></path>
+                    </svg>
+                  </button>
+                  <input id="playerVolume" class="player-volume" type="range" min="0" max="1" step="0.05" value="1" aria-label="音量" />
+                </div>
+                  <button id="playerRate" type="button" aria-label="切换播放速度" data-tooltip="切换播放速度">1.0×</button>
+                  <button id="playerFullscreen" class="player-fullscreen-button" type="button" aria-label="进入全屏" aria-pressed="false" data-state="enter" data-tooltip="进入全屏">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <g class="fullscreen-enter-icon">
+                        <path d="M4 9V4h5"></path><path d="M15 4h5v5"></path>
+                        <path d="M20 15v5h-5"></path><path d="M9 20H4v-5"></path>
+                      </g>
+                      <g class="fullscreen-exit-icon">
+                        <path d="M9 4v5H4"></path><path d="M15 9h5V4"></path>
+                        <path d="M15 20v-5h5"></path><path d="M9 15H4v5"></path>
+                      </g>
+                    </svg>
+                  </button>
+              </div>
+              <section id="outputEvidenceStrip" class="output-evidence-strip hidden" aria-live="polite" aria-label="当前成片依据"></section>
+            </div>
+
+            <section id="evidencePanel" class="evidence-panel evidence-placeholder">
+              <header><div><small id="clipTime">审核说明</small><h3 id="clipTitle">选择事件或镜头</h3></div><div class="evidence-header-actions"><b id="clipScore"></b><button id="closeEvidenceButton" type="button" aria-label="清空当前详情">×</button></div></header>
+              <nav id="contentDetailModeSwitch" class="content-detail-mode-switch hidden" aria-label="内容片段详情模式">
+                <button type="button" data-content-detail-mode="evidence" aria-pressed="true">片段证据</button>
+                <button id="contentBoundaryEntryButton" type="button" data-content-detail-mode="edit" data-boundary-entry-kind="edit" aria-pressed="false">调整边界</button>
+              </nav>
+              <p id="clipReason">点击下方时间轴中的事件或镜头，在这里查看内容说明、时间范围和判断依据。</p>
+              <section id="outputExplanation" class="output-explanation hidden" aria-label="AI 成片解释"></section>
+              <div id="clipTranscript" class="clip-transcript hidden" aria-label="候选对应转写"></div>
+              <div id="clipEvidenceMeta" class="clip-evidence-meta"></div>
+              <ul id="clipEvidence"></ul>
+              <section id="contentBoundaryInspector" class="content-boundary-inspector hidden" aria-label="片段边界编辑"></section>
+              <div class="clip-actions"><button id="addToChatButton" class="add-to-chat-button hidden" type="button">加入当前选择</button><button id="keepButton" class="hidden" type="button">下载该片段</button><button id="replaceButton" class="hidden" type="button">删除片段</button></div>
+            </section>
+          </div>
+
+          <nav id="reviewPanelSwitch" class="review-panel-switch hidden" aria-label="视频下方面板">
+            <div class="review-panel-switch-tabs" role="group" aria-label="切换审核面板">
+              <button id="reviewPanelReviewTab" type="button" data-review-panel-mode="review" aria-controls="reviewWorkbench" aria-expanded="false">
+                <span id="reviewPanelReviewLabel">审核内容</span><b id="reviewPanelReviewCount" class="hidden">0</b>
+              </button>
+              <button id="openCandidateDrawer" class="hidden" type="button" aria-controls="candidateDrawer" aria-expanded="false" aria-pressed="false">
+                <span id="reviewPanelCandidateLabel">镜头候选</span><b id="reviewPanelCandidateCount" class="hidden">0</b>
+              </button>
+              <button id="reviewPanelSubjectTab" class="hidden" type="button" aria-controls="personProfilePanel" aria-expanded="false" aria-pressed="false">
+                <span id="reviewPanelSubjectLabel">画面人物</span><b id="reviewPanelSubjectCount" class="hidden">0</b>
+              </button>
+              <button id="reviewPanelTimelineTab" type="button" data-review-panel-mode="timeline" aria-controls="timelinePanel" aria-expanded="false">
+                <span>精细时间线</span>
+              </button>
+            </div>
+            <small id="reviewPanelSwitchHint">视频优先 · 选择面板后展开</small>
+          </nav>
+
+          <section id="reviewWorkbench" class="review-workbench hidden" aria-label="当前任务审核工作区">
+            <header class="review-workbench-header">
+              <div><small id="reviewWorkbenchKicker">当前审核</small><strong id="reviewWorkbenchTitle">审核当前结果</strong></div>
+              <span id="reviewWorkbenchHint">在这里选择内容，右侧播放器用于预览</span>
+            </header>
+            <div id="chatStageHost" class="chat-stage-host review-stage-host" aria-live="polite"></div>
+            <section id="reviewActionDock" class="review-action-dock hidden" aria-live="polite">
+              <div class="review-action-copy">
+                <small id="reviewActionKicker">当前选择</small>
+                <strong id="reviewActionTitle">选择内容后继续</strong>
+                <span id="reviewActionMeta">尚未选择</span>
+              </div>
+              <div class="review-action-controls">
+                <label id="reviewActionModeWrap" class="review-action-mode hidden"><span id="reviewActionModeLabel">输出</span><select id="reviewActionMode" aria-label="当前审核操作方式"></select></label>
+                <label id="reviewActionToggleWrap" class="review-action-toggle hidden"><input id="reviewActionToggle" type="checkbox"><span id="reviewActionToggleLabel">附加选项</span></label>
+                <button id="reviewActionSettings" class="review-action-settings hidden" type="button">更多设置</button>
+                <button id="reviewActionPrimary" class="review-action-primary" type="button">继续</button>
+              </div>
+            </section>
+          </section>
+
+          <section id="portraitPrecisionWorkbench" class="portrait-precision-workbench" aria-label="竖屏精剪镜头工作台" aria-live="polite">
+            <div id="portraitWorkbenchFrame" class="portrait-workbench-frame" data-state="empty" role="img" aria-label="当前时间线画面预览">
+              <span class="portrait-workbench-frame-badge">源镜头预览</span>
+              <div class="portrait-workbench-frame-placeholder" aria-hidden="true">
+                <i></i>
+                <strong>正在准备源画面</strong>
+                <small>时间线画面就绪后会自动显示</small>
+              </div>
+            </div>
+            <div class="portrait-workbench-copy">
+              <header><small>镜头检查</small><strong id="portraitWorkbenchTitle">选择时间线中的镜头</strong></header>
+              <p id="portraitWorkbenchReason">在下方时间线选择片段，这里会显示对应画面与时间信息。</p>
+              <dl class="portrait-workbench-facts" aria-label="当前镜头信息">
+                <div><dt>当前查看</dt><dd id="portraitWorkbenchMode">源片画面</dd></div>
+                <div><dt>播放位置</dt><dd id="portraitWorkbenchPosition">尚未定位</dd></div>
+              </dl>
+              <ol class="portrait-workbench-guide" aria-label="竖屏精剪操作顺序">
+                <li data-workbench-step="select"><i>1</i><span><b>选择镜头</b><small>在下方时间线点击片段或关键帧</small></span></li>
+                <li data-workbench-step="inspect"><i>2</i><span><b>核对源画面</b><small>检查内容、边界和衔接位置</small></span></li>
+                <li data-workbench-step="compose"><i>3</i><span><b>检查竖屏构图</b><small>右侧播放器始终显示最终成片</small></span></li>
+              </ol>
+              <footer><span id="portraitWorkbenchTime">尚未选择</span><button id="portraitWorkbenchOpenProperties" type="button">片段详情</button></footer>
+            </div>
+          </section>
+
+          <div id="portraitVideoResizer" class="portrait-video-resizer" role="separator" aria-label="调整竖屏视频区域宽度" aria-orientation="vertical" tabindex="0" title="左右拖动调整视频宽度，双击恢复默认"></div>
+
+          <section id="timelinePanel" class="timeline-panel hidden" aria-label="视频审核时间轴">
+            <header>
+              <div class="timeline-heading"><strong id="timelineTitle">智能剪辑时间线</strong><span id="timelineHint">点击事件查看内容说明</span></div>
+              <section id="timelinePrecisionContext" class="timeline-precision-context hidden" aria-label="精细审核操作">
+                <span id="timelinePrecisionOutputMeta" class="timeline-precision-output-meta hidden"></span>
+              </section>
+              <section id="timelineEventSummary" class="timeline-event-summary hidden" aria-live="polite">
+                <div><small id="timelineEventSummaryType">当前事件</small><strong id="timelineEventSummaryTitle"></strong></div>
+                <p id="timelineEventSummaryText"></p>
+                <span id="timelineEventSummaryTime"></span>
+              </section>
+              <div class="timeline-review-controls">
+                <button id="timelineExpandToggle" class="timeline-expand-toggle" type="button" aria-expanded="false">展开精细时间轴</button>
+                <button id="timelineLocatePlayhead" class="timeline-locate-playhead hidden" type="button">回到播放头</button>
+                <b><small id="timelineClockLabel">源片</small><span id="timelineCurrent">00:00.0</span> / <span id="timelineDuration">00:00.0</span></b>
+              </div>
+            </header>
+            <aside id="timelinePrecisionDrawer" class="timeline-precision-drawer hidden" aria-label="精细审核设置" aria-hidden="true" data-overlay-state="closed" inert>
+              <header><div><small>精细审核</small><strong id="timelinePrecisionDrawerTitle">审核设置</strong></div><button id="timelinePrecisionDrawerClose" type="button" aria-label="关闭精细审核设置">×</button></header>
+              <div id="timelinePrecisionDrawerBody"></div>
+            </aside>
+            <div class="timeline-toolbar">
+              <div class="timeline-tool-group" aria-label="显示模式"><div class="timeline-view-switch"><button id="timelineWaveMode" class="active" type="button">波形</button><button id="timelineFrameMode" type="button">关键帧</button></div></div>
+              <div class="timeline-tool-group" aria-label="缩放"><button id="timelineZoomOut" type="button" title="缩小时间轴">−</button><button id="timelineFit" type="button" aria-pressed="true">适应全片</button><button id="timelineZoomIn" type="button" title="放大时间轴">＋</button><button id="timelineFocusReview" class="hidden" type="button" disabled>缩放到当前事件</button></div>
+              <div class="timeline-tool-group" aria-label="手动选区"><button id="timelineManualSelectToggle" type="button" aria-pressed="false" title="开启后在源视频时间轴上拖动选择任意片段">手动选区</button></div>
+              <div id="timelineContentTrimGroup" class="timeline-tool-group hidden" aria-label="内容片段边界"><button id="timelineContentTrim" type="button" title="调整当前预览片段的开始和结束位置">调整当前片段</button></div>
+              <div class="timeline-tool-group timeline-layer-switch" aria-label="时间轴辅助图层">
+                <button id="timelineCutsToggle" class="active" type="button" aria-pressed="true" title="显示或隐藏镜头切点">切点</button>
+              </div>
+              <label class="speaker-filter hidden">说话人<select id="speakerFilter" aria-label="按说话人筛选"><option value="all">全部</option></select></label>
+              <span class="timeline-toolbar-spacer"></span>
+            </div>
+            <details id="timelineInsights" class="timeline-insights hidden">
+              <summary><span>剪辑依据</span><b id="timelineInsightsCount">0 项</b><em>点击记录可定位时间轴</em></summary>
+              <div id="timelineInsightsList"></div>
+            </details>
+            <div id="timelineOverview" class="timeline-overview">
+              <div id="timelineOverviewClips"></div><i id="timelineViewWindow"></i><b id="timelineOverviewPlayhead"></b>
+            </div>
+            <section id="timelineProposalTrack" class="timeline-proposal-track hidden" aria-label="AI 剪辑提案时间轴">
+              <header><div><small>AI 提案 · 尚未应用</small><strong id="timelineProposalTitle">剪辑编排预览</strong></div><span id="timelineProposalDuration">00:00</span></header>
+              <div id="timelineProposalOutputs" class="timeline-proposal-outputs"></div>
+            </section>
+            <section id="timelineCoverTrack" class="timeline-cover-track hidden" aria-label="封面片头时间轴">
+              <header><div><small>封面复核 · 保存前不会修改视频</small><strong>选择符合要求的封面</strong></div><span id="timelineCoverDraftState">等待选择</span></header>
+              <p id="timelineCoverRequirementSummary" class="timeline-cover-requirement-summary"></p>
+              <div id="timelineCoverVariants" class="timeline-cover-variants" aria-label="封面候选"></div>
+              <div id="timelineCoverEditor" class="timeline-cover-editor"></div>
+            </section>
+            <div id="timelineViewport" class="timeline-viewport waveform-mode">
+              <div id="timelineTrackLabels" class="timeline-track-labels" aria-hidden="true"><span data-track-kind="video">画面</span><span data-track-kind="audio">音频</span></div>
+              <div id="timelineTrackContent" class="timeline-track-content">
+                <canvas id="waveformCanvas"></canvas>
+                <div id="timelineLinkedRanges" class="timeline-linked-ranges" aria-hidden="true"></div>
+                <div id="timelineThumbnails" class="timeline-thumbnails"></div>
+                <div id="timelineSceneCuts" class="timeline-scene-cuts"></div>
+                <svg id="timelineEventRelations" class="timeline-event-relations" aria-hidden="true" focusable="false"></svg>
+                <div id="timelineLabels" class="timeline-labels"></div>
+                <div id="timelineClips" class="timeline-clips"></div>
+                <div id="timelineProposalPreview" class="timeline-proposal-preview hidden" aria-hidden="true"></div>
+                <div id="timelineShotMarkers" class="timeline-shot-markers"></div>
+                <div id="timelineSelection" class="timeline-selection hidden">
+                  <button class="timeline-handle start" type="button" aria-label="调整源片选区入点"></button>
+                  <span></span>
+                  <button class="timeline-handle end" type="button" aria-label="调整源片选区出点"></button>
+                </div>
+                <i id="timelinePlayhead" class="timeline-playhead"></i>
+              </div>
+            </div>
+            <section id="timelineSpeakerTrack" class="timeline-speaker-track hidden" aria-label="本视频说话人时间轴">
+              <div class="timeline-speaker-track-label">
+                <div class="timeline-speaker-track-heading"><strong>说话人</strong><span id="timelineSpeakerTrackCount">0 人 · 0 段</span></div>
+                <div id="timelineSpeakerTrackLabels" class="timeline-speaker-row-labels"></div>
+              </div>
+              <div class="timeline-speaker-track-content">
+                <span class="timeline-speaker-track-caption">独立轨道 · 源片时间</span>
+                <div id="timelineSpeakerSegments" class="timeline-speaker-segments"></div>
+                <i id="timelineSpeakerPlayhead" class="timeline-speaker-playhead" aria-hidden="true"></i>
+              </div>
+            </section>
+            <section id="timelinePersonTrack" class="timeline-person-track hidden" aria-label="本视频人物出镜时间轴">
+              <div class="timeline-person-track-label">
+                <div class="timeline-person-track-heading"><strong>人物</strong><span id="timelinePersonTrackCount">0 人 · 0 段</span></div>
+                <div id="timelinePersonTrackLabels" class="timeline-person-row-labels"></div>
+              </div>
+              <div class="timeline-person-track-content">
+                <span class="timeline-person-track-caption">固定人物轨道 · 源片时间</span>
+                <div id="timelinePersonSegments" class="timeline-person-segments"></div>
+                <i id="timelinePersonPlayhead" class="timeline-person-playhead" aria-hidden="true"></i>
+              </div>
+            </section>
+            <footer><span><i class="legend-candidate"></i>高光镜头</span><span><i class="legend-recommended"></i>AI 推荐事件</span><span><i class="legend-selected"></i>当前选中</span><span><i class="legend-playhead"></i>播放头</span><span id="waveformState" class="generative-inline-status" data-tone="loading"><span class="generative-inline-motion" data-generative-loader="inline" data-loader-variant="signal" data-loader-size="15" data-loader-label="正在准备音频波形"></span><b class="generative-status-label">正在准备音频波形…</b></span><span id="timelineThumbnailState" class="timeline-thumbnail-state generative-inline-status" data-tone="loading"><span class="generative-inline-motion" data-generative-loader="inline" data-loader-variant="glyph" data-loader-size="15" data-loader-label="正在准备画面缩略图"></span><b class="generative-status-label">正在准备画面缩略图…</b></span><div id="timelineSelectionActions" class="timeline-selection-actions hidden"><span id="timelineSelectionSummary"></span><label>源片入点 <input id="timelineSelectionStartInput" type="number" min="0" step="0.01" aria-label="源片选区入点（秒）"></label><label>源片出点 <input id="timelineSelectionEndInput" type="number" min="0" step="0.01" aria-label="源片选区出点（秒）"></label><button id="timelineSelectionPreview" type="button">预览</button><button id="timelineContentMoveEarlier" class="timeline-content-order-action hidden" type="button">前移</button><button id="timelineContentMoveLater" class="timeline-content-order-action hidden" type="button">后移</button><button id="timelineContentToggleSelected" class="timeline-content-selection-action hidden" type="button">移出结果</button><button id="timelineSelectionCancel" type="button">取消</button><button id="timelineSelectionConfirm" type="button">确认选区</button><button id="timelineSelectionCompose" type="button">确认后合成</button></div></footer>
+          </section>
+
+        </div>
+      </section>
+
+
+      <aside id="reviewRail" class="review-rail glass-panel">
+        <header class="rail-header"><div><small>智能审核</small><strong id="railTitle">审核结果</strong></div></header>
+        <section id="jobStatus" class="analysis-console hidden" aria-label="AI 分析进度">
+          <div class="progress-orb" id="progressOrb"><span>AI</span><b id="jobPercent">0%</b></div>
+          <div class="analysis-copy"><small>AI 分析进度</small><div class="analysis-detail-heading"><span id="pipelineThinkingOrb" class="thinking-orb-slot pipeline-thinking-orb hidden" data-thinking-orb data-orb-state="working" data-orb-size="20" data-orb-theme="light" data-orb-label="AI 正在分析"></span><strong id="jobDetail">准备中</strong></div><p id="jobElapsed">任务已运行 00:00</p><div class="progress-facts"><span id="jobStageProgress">阶段准备中</span><span id="jobModel">系统</span><span id="jobEta">等待阶段结果</span></div><i class="analysis-progress"><b id="jobProgress"></b></i></div>
+          <ol id="jobStageList" class="stage-chain">
+            <li data-phase="prepare"><i></i><span>准备</span></li>
+            <li data-phase="analysis"><i></i><span>AI 分析</span></li>
+            <li data-phase="output"><i></i><span>生成成片</span></li>
+          </ol>
+          <div id="analysisDecision" class="analysis-decision hidden"></div>
+          <button id="cancelButton" type="button">停止分析</button>
+          <p id="jobError" class="hidden"></p>
+        </section>
+        <div id="railBody" class="rail-body"><div class="rail-empty"><span class="empty-thinking-orb" data-thinking-orb data-orb-state="shaping" data-orb-size="64" data-orb-theme="light" data-orb-label="等待分析任务"></span><strong>等待分析任务</strong><p>上传素材后，这里会显示事件高光、候选镜头与生成进度。</p></div></div>
+        <section id="clipSection" class="clip-section hidden">
+          <header><div><small>版本与交付</small><h3>版本列表</h3><p class="clip-selection-hint">点击版本切换上方播放器</p></div><div class="clip-header-actions"><span id="clipSummary"></span><button id="outputReeditButton" type="button">返回审核</button></div></header>
+          <div id="clipVersionPicker" class="clip-version-picker" role="tablist" aria-label="选择成片版本"></div>
+          <div id="clipStrip" class="clip-strip"></div>
+        </section>
+        <section id="railOutput" class="rail-output hidden"></section>
+      </aside>
+    </main>
+    <button id="agentPlanDrawerScrim" class="agent-plan-drawer-scrim hidden" type="button" aria-label="关闭计划详情"></button>
+    <aside id="agentPlanDrawer" class="agent-plan-drawer hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Agent 计划详情" data-overlay-state="closed" inert>
+      <header><div class="agent-plan-drawer-brand"><img src="/static/assets/cliptalk-director-icon.png?v=20260812-1" alt="" aria-hidden="true" /><div><small id="agentPlanDrawerKicker">智能剪辑计划</small><strong id="agentPlanDrawerTitle">计划详情</strong></div></div><button id="agentPlanDrawerClose" type="button" aria-label="关闭计划详情">×</button></header>
+      <nav role="tablist" aria-label="计划详情页签"><button class="active" role="tab" type="button" data-agent-drawer-tab="plan" aria-controls="agentPlanDrawerPlan" aria-selected="true">计划</button><button role="tab" type="button" data-agent-drawer-tab="activity" aria-controls="agentPlanDrawerActivity" aria-selected="false">活动</button></nav>
+      <section id="agentPlanDrawerPlan" class="agent-plan-drawer-panel" role="tabpanel" data-agent-drawer-panel="plan"></section>
+      <section id="agentPlanDrawerActivity" class="agent-plan-drawer-panel hidden" role="tabpanel" data-agent-drawer-panel="activity" aria-live="polite"></section>
+      <footer id="agentPlanDrawerFooter"></footer>
+    </aside>
+
+    <section id="libraryView" class="app-library-page hidden" aria-labelledby="libraryTitle">
+      <header><div><small>成片管理</small><h1 id="libraryTitle">成片库</h1><p>正式生成的成片集中在这里；需要独立保存时可选择长期保留。</p></div><button type="button" data-library-return>返回当前任务</button></header>
+      <div class="app-library-toolbar"><label><span class="sr-only">搜索成片</span><i aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5" /><path d="m15 15 4.5 4.5" /></svg></i><input id="librarySearch" type="search" maxlength="120" placeholder="搜索成片" autocomplete="off" /></label><select id="librarySort" aria-label="成片排序"><option value="newest">创建时间 · 最新</option><option value="oldest">创建时间 · 最早</option><option value="duration">时长 · 最长</option></select></div>
+      <div id="libraryOutputList" class="app-library-list" aria-live="polite"><div class="app-library-loading" role="status">正在读取成片库</div></div>
+    </section>
+
+    <section id="secondaryEditor" class="secondary-editor secondary-editor-v2 hidden" aria-label="成片二次编辑工作区" aria-hidden="true" data-overlay-state="closed" inert>
+      <header class="secondary-editor-header">
+        <div class="secondary-editor-heading">
+          <button id="secondaryEditorClose" type="button" aria-label="返回当前任务">← 返回任务</button>
+          <span></span>
+          <div><strong id="secondaryEditorTitle">版本编辑</strong><span class="secondary-editor-document-state"><small id="secondaryEditorSaveState">正在打开草稿</small><small id="secondaryEditorPreviewFreshness" data-tone="loading">正在检查预览</small></span></div>
+        </div>
+        <div class="secondary-editor-actions">
+          <div class="secondary-editor-history-actions" role="group" aria-label="编辑历史"><button id="secondaryEditorUndo" type="button" disabled>撤销</button><button id="secondaryEditorRedo" type="button" disabled>重做</button></div>
+          <button id="secondaryEditorPreview" type="button" title="预览当前剪辑效果">生成审核样片</button>
+          <button id="secondaryEditorExport" class="primary" type="button" title="生成当前剪辑的成片版本">生成成片</button>
+        </div>
+      </header>
+      <div class="secondary-editor-layout">
+        <button id="secondaryEditorPanelScrim" class="secondary-editor-panel-scrim hidden" type="button" aria-label="关闭侧栏"></button>
+        <aside id="secondaryEditorLibrary" class="secondary-editor-library">
+          <button type="button" class="secondary-panel-close" data-secondary-close-panel aria-label="关闭素材面板">×</button><header><div><small>素材库</small><strong id="secondaryEditorLibraryTitle">可插入片段</strong><em id="secondaryEditorLibraryInsertHint">预览后添加到时间线</em></div><span id="secondaryEditorLibraryCount">0</span></header>
+          <div class="secondary-editor-library-tabs" role="tablist"><button class="active" role="tab" aria-selected="true" data-secondary-library="mode" type="button">片段</button><button role="tab" aria-selected="false" data-secondary-library="source" type="button">源片范围</button></div>
+          <p id="secondaryEditorLibraryContext" class="secondary-editor-library-context">正在读取当前任务的素材来源</p>
+          <label class="secondary-editor-library-search" for="secondaryEditorLibrarySearch"><span class="sr-only">搜索素材</span><input id="secondaryEditorLibrarySearch" type="search" maxlength="120" autocomplete="off" placeholder="搜索标题、对白或来源"></label>
+          <nav id="secondaryEditorLibraryFilters" class="secondary-editor-library-filters" aria-label="素材分组">
+            <button type="button" data-secondary-material-filter="recommended" aria-pressed="false">推荐 <b>0</b></button>
+            <button type="button" data-secondary-material-filter="timeline" aria-pressed="false">时间线 <b>0</b></button>
+            <button type="button" data-secondary-material-filter="kept" aria-pressed="false">历史已选 <b>0</b></button>
+            <button type="button" data-secondary-material-filter="review" aria-pressed="false">其他 <b>0</b></button>
+          </nav>
+          <details class="secondary-editor-insert-target"><summary>插入位置</summary>
+            <label for="secondaryEditorInsertTarget"><span>插入位置</span><select id="secondaryEditorInsertTarget" aria-describedby="secondaryEditorLibraryInsertHint"></select></label>
+            <button id="secondaryEditorInsertFollow" type="button" title="取消固定位置，重新跟随时间线播放头">跟随播放头</button>
+          </details>
+          <div id="secondaryEditorLibraryBody" class="secondary-editor-library-body"></div>
+          <form id="secondaryEditorRangeForm" class="secondary-editor-range-form hidden">
+            <label><span>开始</span><input id="secondaryEditorRangeStart" type="text" inputmode="decimal" placeholder="例如 01:23.45" aria-describedby="secondaryEditorRangeTimeHint" required></label>
+            <label><span>结束</span><input id="secondaryEditorRangeEnd" type="text" inputmode="decimal" placeholder="例如 01:32.53" aria-describedby="secondaryEditorRangeTimeHint" required></label>
+            <small id="secondaryEditorRangeTimeHint" class="secondary-editor-time-hint">支持“分:秒.百分秒”或直接输入秒数</small>
+            <label><span>片段名称</span><input id="secondaryEditorRangeTitle" type="text" maxlength="100" placeholder="补充片段"></label>
+            <button id="secondaryEditorRangeSubmit" class="primary" type="submit">加入当前片段后</button>
+          </form>
+        </aside>
+        <main class="secondary-editor-main">
+          <div class="secondary-editor-view-switch" role="group" aria-label="预览与画面工具"><span class="secondary-editor-view-label">查看</span><button class="active" aria-pressed="true" data-secondary-view="sequence" type="button">成片结果</button><button aria-pressed="false" data-secondary-view="source" type="button">源视频</button><span id="secondaryEditorClock">成片 00:00.00 / 00:00.00</span><div class="secondary-editor-panel-switch"><button id="secondaryEditorLibraryToggle" type="button" aria-controls="secondaryEditorLibrary" aria-expanded="false">素材库</button><button id="secondaryEditorInspectorToggle" type="button" aria-controls="secondaryEditorInspector" aria-expanded="false">编辑设置</button></div></div>
+          <div class="secondary-editor-player">
+            <video id="secondaryEditorVideo" preload="metadata" playsinline aria-label="版本编辑视频预览"></video>
+            <div id="secondaryEditorTextLayerCanvas" class="secondary-editor-text-layer-canvas" aria-label="独立文本图层"></div>
+            <div id="secondaryEditorSubtitlePreview" class="secondary-editor-subtitle-preview hidden" role="group" tabindex="0" aria-label="字幕画面位置，可拖动调整">
+              <button type="button" data-secondary-subtitle-move aria-label="拖动调整文本位置" title="拖动调整位置">✥</button>
+              <span data-secondary-subtitle-preview-text contenteditable="plaintext-only" role="textbox" aria-label="字幕或文本框内容" aria-multiline="false" data-placeholder="输入文本"></span>
+              <button type="button" data-secondary-subtitle-resize aria-label="拖动调整字幕大小" title="拖动调整字幕大小"></button>
+            </div>
+            <span id="secondaryEditorVideoBadge">成片预览</span>
+            <div id="secondaryEditorPreviewState" class="secondary-editor-preview-state hidden" role="status"></div>
+            <div id="secondaryEditorMediaControls" class="secondary-editor-media-controls" aria-label="视频播放控制">
+              <button id="secondaryEditorMediaPlay" type="button" aria-label="播放" title="播放/暂停（Space）">▶</button>
+              <input id="secondaryEditorMediaSeek" type="range" min="0" max="0" step="0.01" value="0" aria-label="视频播放位置">
+              <span id="secondaryEditorMediaClock">00:00.00 / 00:00.00</span>
+              <button id="secondaryEditorMediaMute" type="button" aria-pressed="false">静音</button>
+              <button id="secondaryEditorMediaFullscreen" type="button">全屏</button>
+            </div>
+          </div>
+          <section class="secondary-editor-timeline-section">
+            <header>
+              <div class="secondary-editor-timeline-heading"><span class="secondary-editor-timeline-kicker">时间线</span><strong>成片编排</strong><span id="secondaryEditorTimelineMeta">0 个片段</span><span id="secondaryEditorTimelineDraftState" class="secondary-editor-timeline-draft-state hidden" role="status">待保存排期预览</span><span id="secondaryEditorMediaState" class="secondary-editor-media-state">正在载入媒体索引</span></div>
+              <div class="secondary-editor-timeline-actions">
+
+
+                <div class="secondary-editor-zoom" role="group" aria-label="时间线缩放"><button id="secondaryEditorZoomOut" type="button" aria-label="缩小时间线">−</button><button id="secondaryEditorZoomFit" type="button">适应</button><button id="secondaryEditorZoomIn" type="button" aria-label="放大时间线">＋</button></div>
+                <div class="secondary-editor-core-actions"><button type="button" data-secondary-add-material>＋ 添加片段</button><button id="secondaryEditorSplit" type="button" disabled title="Ctrl/Cmd+B">分割</button><button id="secondaryEditorDelete" type="button" disabled title="删除所选片段并自动闭合时间线空隙（Delete）">删除</button><button type="button" data-secondary-open-panel="subtitle">字幕设置</button></div>
+                <details class="secondary-editor-action-overflow"><summary>更多</summary><div><button id="secondaryEditorPreviousFrame" type="button" aria-label="后退一帧" title="后退一帧（,）">‹ 帧</button><button id="secondaryEditorNextFrame" type="button" aria-label="前进一帧" title="前进一帧（.）">帧 ›</button><button id="secondaryEditorSnap" class="active" type="button" aria-pressed="true" title="拖动边界时吸附到帧、静音点和镜头切点">吸附</button><button id="secondaryEditorTrimLeft" type="button" disabled title="裁掉播放头左侧（Q）">裁左</button><button id="secondaryEditorTrimRight" type="button" disabled title="裁掉播放头右侧（W）">裁右</button><button id="secondarySubtitleAdd" class="secondary-editor-add-text" type="button" title="在播放头处新建独立文本图层">＋ 文本</button><button id="secondaryTextDelete" class="secondary-editor-delete-text hidden" type="button" title="删除所选文本图层">删除文本</button><button type="button" data-secondary-open-panel="ai">AI 修改</button><button id="secondaryEditorDuplicate" type="button" disabled>复制片段</button><button id="secondaryEditorMarker" type="button" disabled>添加标记</button><button id="secondaryEditorShortcuts" type="button" aria-expanded="false">查看快捷键</button></div></details>
+              </div>
+            </header>
+            <div id="secondaryEditorShortcutPanel" class="secondary-editor-shortcuts hidden" role="status"><span><kbd>Space</kbd> 播放/暂停</span><span><kbd>Ctrl+B</kbd> 分割</span><span><kbd>Q / W</kbd> 裁左/裁右</span><span><kbd>, / .</kbd> 逐帧</span><span><kbd>+ / −</kbd> 缩放</span><span><kbd>/</kbd> 适应</span><span><kbd>Shift+拖边</kbd> 滚动裁剪</span><span><kbd>Shift+点击</kbd> 连选</span></div>
+            <div id="secondaryEditorTimelineViewport" class="secondary-editor-timeline-viewport">
+              <div id="secondaryEditorTimelineCanvas" class="secondary-editor-timeline-canvas">
+                <div id="secondaryEditorRuler" class="secondary-editor-ruler" role="slider" tabindex="0" aria-label="成片播放位置" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"></div>
+                <div id="secondaryEditorTimeline" class="secondary-editor-timeline" aria-label="可排序成片时间线"></div>
+                <div id="secondaryEditorMarkers" class="secondary-editor-markers" aria-label="时间线标记"></div>
+                <div id="secondaryEditorDropGuide" class="secondary-editor-drop-guide hidden" aria-hidden="true"><span>插入到这里</span></div>
+                <div id="secondaryEditorTextTrack" class="secondary-editor-text-track"><span title="独立文本使用成片时间">文本</span><div id="secondaryEditorTextLane" class="secondary-editor-text-lane"><div id="secondaryEditorTextSummary"></div><div id="secondaryEditorTextBlocks" class="secondary-editor-text-blocks"></div></div></div>
+                <div id="secondaryEditorSubtitleTrack" class="secondary-editor-subtitle-track"><span title="字幕块使用成片时间">成片字幕</span><div id="secondaryEditorSubtitleLane" class="secondary-editor-subtitle-lane"><div id="secondaryEditorSubtitleSummary"></div><div id="secondaryEditorSubtitleBlocks" class="secondary-editor-subtitle-blocks"></div></div></div>
+                <div id="secondaryEditorSnapGuide" class="secondary-editor-snap-guide hidden" aria-hidden="true"><span></span></div>
+                <div id="secondaryEditorPlayhead" class="secondary-editor-playhead" aria-hidden="true"><i></i><span id="secondaryEditorPlayheadLabel">00:00.00</span></div>
+              </div>
+            </div>
+          </section>
+        </main>
+        <aside id="secondaryEditorInspector" class="secondary-editor-inspector">
+          <button type="button" class="secondary-panel-close" data-secondary-close-panel aria-label="关闭面板">×</button><nav id="secondaryInspectorTabs" class="secondary-inspector-tabs" aria-label="精剪设置类别">
+            <button type="button" class="active" data-secondary-inspector-tab="clip" aria-pressed="true">片段</button>
+            <button type="button" data-secondary-inspector-tab="subtitle" aria-pressed="false">字幕</button>
+            <button type="button" data-secondary-inspector-tab="ai" aria-pressed="false">AI 修改</button>
+            <button type="button" data-secondary-inspector-tab="export" aria-pressed="false">生成版本</button>
+          </nav>
+          <section class="secondary-inspector-section" data-secondary-inspector-panel="clip">
+            <header><small>片段设置</small><strong id="secondaryInspectorTitle">选择一个片段</strong></header>
+            <div id="secondaryInspectorEmpty" class="secondary-inspector-empty">选择片段后调整</div>
+            <form id="secondaryInspectorForm" class="secondary-inspector-form hidden">
+              <fieldset class="secondary-inspector-fieldset"><legend>时间</legend><div class="secondary-inspector-time"><label><span>开始</span><input id="secondaryInspectorStart" type="text" inputmode="decimal" aria-describedby="secondaryInspectorStartMeta"><small id="secondaryInspectorStartMeta"></small></label><label><span>结束</span><input id="secondaryInspectorEnd" type="text" inputmode="decimal" aria-describedby="secondaryInspectorEndMeta"><small id="secondaryInspectorEndMeta"></small></label></div><div id="secondaryInspectorTimingSummary" class="secondary-inspector-timing-summary" aria-live="polite"></div></fieldset>
+<fieldset class="secondary-inspector-fieldset"><legend>播放</legend><label><span>速度</span><select id="secondaryInspectorSpeed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option><option value="1.1">1.1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><label><span>片段音量 <b id="secondaryInspectorGainValue">100%</b></span><input id="secondaryInspectorGain" type="range" min="0" max="200" step="1" value="100"></label><label class="secondary-inspector-check"><input id="secondaryInspectorMuted" type="checkbox"><span>静音该片段</span></label></fieldset><details class="secondary-inspector-advanced"><summary>高级</summary><label><span>转场</span><select id="secondaryInspectorTransition"><option value="cut">硬切</option><option value="dissolve">短叠化</option><option value="fade_black">淡黑</option></select></label><label><span>转场时长</span><input id="secondaryInspectorTransitionDuration" type="number" min="0" max="0.4" step="0.01"></label><label><span>声音衔接</span><select id="secondaryInspectorAudio"><option value="none">同步音画</option><option value="j_cut">J-cut</option><option value="l_cut">L-cut</option></select></label><label><span>音频淡入</span><input id="secondaryInspectorFadeIn" type="number" min="0" max="0.35" step="0.01"></label><label><span>音频淡出</span><input id="secondaryInspectorFadeOut" type="number" min="0" max="0.35" step="0.01"></label></details>
+              <div class="secondary-inspector-form-actions"><button id="secondaryInspectorReset" type="button" disabled>取消</button><button id="secondaryInspectorSave" class="primary" type="submit">保存</button></div>
+            </form>
+          </section>
+          <section class="secondary-inspector-section secondary-subtitle-controls" data-secondary-inspector-panel="subtitle">
+            <header><small>字幕</small><strong>AI 字幕校对</strong></header>
+            <label><input id="secondaryEditorSubtitleEnabled" type="checkbox"><span>生成成片时添加字幕</span></label>
+            <button id="secondaryEditorSubtitleReview" type="button">校对字幕</button>
+            <div class="secondary-subtitle-canvas-settings">
+              <span>当前片段字幕</span>
+              <div class="secondary-subtitle-clip-scope" aria-live="polite"><strong id="secondarySubtitleTransformClip">请先定位到一个片段</strong><small id="secondarySubtitleTransformCount">只会调整当前片段</small></div>
+              <button id="secondarySubtitleTransformReset" type="button">重置位置</button>
+            </div>
+            <div class="secondary-subtitle-actions"><button id="secondarySubtitleSplit" type="button">拆分</button><button id="secondarySubtitleMerge" type="button">合并下一条</button><button id="secondarySubtitleDelete" type="button">删除</button></div>
+            <small id="secondaryEditorSubtitleTransformHint">拖动画面中的字幕调整位置</small>
+            <small id="secondaryEditorSubtitleStatus">生成成片前需确认字幕</small>
+          </section>
+          <section class="secondary-inspector-section secondary-ai-editor" data-secondary-inspector-panel="ai">
+            <header><small>先审阅，再应用</small><strong>AI 批量修改</strong></header>
+            <p class="secondary-ai-editor-intro">AI 只生成待审核提案，不会直接改动时间线。你可以检查影响片段、时长变化和具体操作后再应用。</p>
+            <label class="secondary-ai-scope" for="secondaryEditorAiScope"><span>修改范围</span><select id="secondaryEditorAiScope"><option value="selection">当前选择</option><option value="timeline">整个成片</option></select><small id="secondaryEditorAiScopeSummary">当前选择 1 个片段</small></label>
+            <div class="secondary-command-examples" aria-label="常用 AI 修改"><button type="button" data-secondary-command="删除所选片段中的重复表达" data-secondary-command-scope="selection">删除重复表达</button><button type="button" data-secondary-command="将所选片段改成 1.25 倍速" data-secondary-command-scope="selection">调整为 1.25×</button><button type="button" data-secondary-command="按源视频时间重新排列全部片段" data-secondary-command-scope="timeline">按源时间排列</button></div>
+            <form id="secondaryEditorAiForm"><label for="secondaryEditorAiInput">描述你想怎样修改</label><textarea id="secondaryEditorAiInput" rows="4" maxlength="500" placeholder="例如：删除重复表达，保留核心观点并按主题组织"></textarea><small>下一步会生成修改清单，不会立即应用。</small><button type="submit">查看修改预案</button></form>
+            <div id="secondaryEditorProposal" class="secondary-editor-proposal hidden"></div>
+          </section>
+          <section class="secondary-inspector-section secondary-export-settings" data-secondary-inspector-panel="export"><header><small>生成成片</small><strong>成片信息</strong></header><label><span>版本名称</span><input id="secondaryEditorVersionLabel" type="text" maxlength="80" value="精剪版"></label><div id="secondaryEditorPreflight" class="secondary-editor-preflight" role="status"></div><small id="secondaryEditorOutputSettingsHint">使用当前精剪的画幅和清晰度设置。</small></section>
+        </aside>
+        <div id="secondaryEditorInspectorResize" class="secondary-editor-inspector-resize" role="separator" tabindex="0" aria-label="调整右侧设置栏宽度" aria-orientation="vertical" aria-valuemin="360" aria-valuemax="560" aria-valuenow="420"><span aria-hidden="true"></span></div>
+        <div id="secondaryEditorWorkspaceResize" class="secondary-editor-workspace-resize" role="separator" tabindex="0" aria-label="调整预览与时间线高度" aria-orientation="horizontal" aria-valuemin="36" aria-valuemax="58" aria-valuenow="58"><span aria-hidden="true"></span></div>
+      </div>
+    </section>
+
+    <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+    <aside id="candidateDrawer" class="candidate-drawer hidden" role="dialog" aria-modal="true" aria-labelledby="candidateDrawerTitle" aria-hidden="true" data-overlay-state="closed" tabindex="-1" inert>
+      <header><div><small id="candidateDrawerKicker">源视频分析结果</small><strong id="candidateDrawerTitle">候选镜头</strong></div><button id="closeCandidateDrawer" type="button" aria-label="关闭候选镜头面板">×</button></header>
+      <p id="candidateDrawerDescription">查看从源视频中识别出的候选镜头。</p>
+      <input id="candidateDrawerSearch" class="candidate-drawer-search" type="search" placeholder="搜索标题、对白或说话人">
+      <div id="candidateDrawerList" class="candidate-drawer-list"></div>
+    </aside>
+
+    <div id="settingsBackdrop" class="settings-backdrop hidden"></div>
+    <aside id="voiceProfilePanel" class="voice-profile-panel hidden" aria-labelledby="voiceProfileTitle">
+      <header><div><small>发言剪辑</small><strong id="voiceProfileTitle">选择说话人并提取发言</strong><p>自动区分视频中的说话人，试听确认后提取对应发言；右侧视频和时间轴始终可以操作。</p></div><button id="closeVoiceProfiles" type="button" aria-label="收起发言剪辑侧栏">×</button></header>
+      <section class="current-voice-section">
+        <div class="voice-profile-heading"><div><strong>识别出的说话人</strong><small>按声音自动分组，仅在当前任务中使用</small></div><small id="currentVoiceCount">尚未识别</small></div>
+        <nav id="voiceReviewModeSwitch" class="subject-review-mode-switch hidden" aria-label="说话人处理步骤"><button type="button" data-voice-review-mode="correct" aria-pressed="true"><b>1</b><span>校正声音分组</span></button><button type="button" data-voice-review-mode="select" aria-pressed="false"><b>2</b><span>选择剪辑目标</span></button></nav>
+        <div class="current-voice-discovery-controls">
+          <label><span>预计说话人数</span><select id="expectedVoiceCount"><option value="0">自动判断</option><option value="1">1 人</option><option value="2">2 人</option><option value="3">3 人</option><option value="4">4 人</option><option value="5">5 人</option><option value="6">6 人</option><option value="7">7 人</option><option value="8">8 人</option><option value="9">9 人</option><option value="10">10 人</option><option value="11">11 人</option><option value="12">12 人</option></select></label>
+          <button id="discoverCurrentVoices" type="button" class="primary">开始识别说话人</button>
+          <small>知道人数时直接指定，可避免相近声线被自动合并；不确定时使用自动判断。</small>
+        </div>
+        <p id="voiceProfileStatus" class="voice-profile-status" aria-live="polite"></p>
+        <div id="currentVoiceList" class="current-voice-list"></div>
+        <section id="currentVoiceActions" class="current-voice-actions hidden">
+          <label class="voice-search-filter"><span>只查包含这些内容的发言（可选）</span><input id="voiceSearchQuery" type="text" maxlength="500" placeholder="留空则整理所选说话人的全部发言"></label>
+          <div class="voice-extract-actions"><label><span>保留范围</span><select id="currentVoiceMode"><option value="include">只保留所选说话人的发言</option><option value="exclude">排除所选说话人，保留其他发言</option><option value="qa_pair">所选说话人的回答及前置问题</option></select></label><button id="searchSelectedVoices" type="button" class="primary">查看发言片段</button></div>
+          <div class="voice-speaker-merge-actions"><span><strong>多个声音其实是同一个人？</strong><small>勾选上方至少两个说话人后合并</small></span><button id="mergeSelectedVoices" type="button">合并所选声音</button></div>
+        </section>
+        <details id="currentVoiceTimelineSection" class="current-voice-timeline-section hidden"><summary><span><strong>校正发言归属</strong><small>试听并勾选分错的发言，可移动归属；单选一段时还能在播放器当前时间精确拆分</small></span><b id="currentVoiceTurnCount">0 段</b></summary><div id="currentVoiceTurns" class="current-voice-turns"></div><footer class="voice-turn-correction-actions"><span id="voiceTurnSelectionSummary">尚未选择发言</span><label><span>移动到</span><select id="voiceReassignTarget"><option value="new">新建说话人</option></select></label><label id="voiceReassignLabelWrap" class="hidden"><span>新说话人名称</span><input id="voiceReassignLabel" type="text" maxlength="48" placeholder="例如：主持人"></label><button id="splitVoiceTurn" type="button" disabled>在播放点拆分</button><button id="reassignVoiceTurns" class="primary" type="button" disabled>确认移动</button><button id="undoVoiceCorrection" type="button">撤销上次校正</button></footer></details>
+      </section>
+      <details id="crossVideoVoiceSection" class="cross-video-voice-section">
+        <summary><span><strong>临时跨视频查找</strong><small>选择一个参考声音，在其他视频中查找；任务结束即删除向量</small></span><b>展开</b></summary>
+        <section class="temporary-voice-search"><p>先在上方只选择一个参考声音，再勾选需要检查的视频。结果会按视频分别生成。</p><div id="temporaryVoiceSources" class="temporary-voice-sources"></div><div class="temporary-voice-actions"><button id="startTemporaryVoiceSearch" type="button" class="primary">开始临时跨视频查找</button><button id="cancelTemporaryVoiceSearch" type="button" class="hidden">取消</button></div><div id="temporaryVoiceSession" class="temporary-voice-session"></div></section>
+      </details>
+    </aside>
+    <aside id="personProfilePanel" class="person-profile-panel hidden" aria-labelledby="personProfileTitle">
+      <header><div><small>人物聚焦</small><strong id="personProfileTitle">选择人物并提取出镜片段</strong><p>确认画面人物后查看其完整出镜分布；右侧视频和人物轨道始终可以操作。</p></div><button id="closePersonProfiles" type="button" aria-label="收起人物聚焦侧栏">×</button></header>
+      <section class="current-person-section">
+        <div class="person-profile-heading"><div><strong>识别出的画面人物</strong><small>按匿名画面特征分组，可能包含同一人物的重复卡片</small></div><small id="currentPersonCount">尚未识别</small></div>
+        <nav id="personReviewModeSwitch" class="subject-review-mode-switch hidden" aria-label="人物处理步骤"><button type="button" data-person-review-mode="correct" aria-pressed="true"><b>1</b><span>校正人物分组</span></button><button type="button" data-person-review-mode="select" aria-pressed="false"><b>2</b><span>选择剪辑目标</span></button></nav>
+        <p id="personProfileStatus" class="person-profile-status" aria-live="polite"></p>
+        <div id="personMergeToolbar" class="person-merge-actions person-merge-toolbar hidden"><span><strong>人物分组不准确？</strong><small>合并重复人物，或勾选下方错误出镜段拆为新人物；所有校正都可撤销</small></span><div><button id="mergeSelectedPersons" type="button" disabled>合并所选人物</button><button id="splitSelectedPersonRanges" type="button" disabled>所选片段拆为新人物</button><button id="undoPersonMerge" type="button">撤销人物校正</button></div></div>
+        <div id="currentPersonList" class="current-person-list"></div>
+        <section id="currentPersonActions" class="current-person-actions hidden">
+          <div><strong id="currentPersonSelectionSummary">已选 0 人</strong><small>选择一个或多个人物后确认提取方式</small></div>
+          <div id="currentPersonMatchModes" class="current-person-match-modes hidden" role="radiogroup" aria-label="人物匹配方式">
+            <label><input type="radio" name="current-person-match-mode" value="any" checked><span>任一人物出现</span></label>
+            <label><input type="radio" name="current-person-match-mode" value="all"><span>所有人物同时出现</span></label>
+          </div>
+          <label class="current-person-activity"><input id="currentPersonSpeakingOnly" type="checkbox"><span>只保留所选人物正在说话的片段</span><small>默认提取所有出镜画面；开启后才会关联人物与声音</small></label>
+          <button id="searchSelectedPersons" type="button" class="primary" disabled>提取所选人物</button>
+        </section>
+        <p class="current-person-privacy">人物仅使用项目内标签或匿名编号，不推断真实身份、性别或其他敏感属性。</p>
+      </section>
+    </aside>
+    <section id="settingsPanel" class="settings-panel model-settings-panel app-settings-page hidden" aria-labelledby="settingsTitle">
+      <header><div><small>系统设置</small><strong id="settingsTitle">设置</strong><p>管理画面分析、剪辑规划与运行环境。新模型配置用于之后创建的任务。</p></div><button id="closeSettings" type="button" aria-label="返回之前的页面">返回</button></header>
+      <section id="setupReadiness" class="setup-readiness" aria-labelledby="setupReadinessTitle">
+        <header><div><small>首次使用检查</small><strong id="setupReadinessTitle">正在检查剪辑能力</strong><p id="setupReadinessSummary">确认运行环境与模型配置后再开始任务。</p></div><button id="refreshSetupReadiness" type="button">重新检查</button></header>
+        <ol id="setupReadinessSteps" aria-live="polite"></ol>
+        <footer><button id="probeEffectiveAgent" type="button" class="hidden">验证当前模型的 Tool Calling</button><span>人物说话识别属于可选增强能力，不会阻断基础剪辑。</span></footer>
+      </section>
+      <nav class="model-role-tabs" aria-label="模型职责">
+        <button type="button" class="active" data-model-role="vision" aria-selected="true"><strong>视觉分析</strong><small>发现事件与镜头边界</small></button>
+        <button type="button" data-model-role="llm" aria-selected="false"><strong>剪辑规划</strong><small>理解需求与编排成片</small></button>
+        <button type="button" data-model-role="agent" aria-selected="false"><strong>Agent 执行</strong><small>路由 Skill 与调用工具</small></button>
+        <button type="button" data-model-role="system" aria-selected="false"><strong>系统能力</strong><small>本地识别与运行环境</small></button>
+      </nav>
+      <form id="visionSettingsForm" class="vision-settings-form model-settings-view" data-model-view="vision">
+        <section class="vision-provider-section">
+          <div class="settings-section-heading"><strong>模型服务</strong><span id="visionActiveSummary">正在读取配置</span></div>
+          <div id="visionProviderList" class="vision-provider-list" role="tablist" aria-label="选择视觉模型服务"></div>
+        </section>
+        <section class="vision-credential-section">
+          <label class="vision-field"><span>API Key</span><div class="vision-secret-input"><input id="visionApiKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="粘贴 API Key"><button id="toggleVisionKey" type="button">显示</button></div><small id="visionKeyHint">密钥保存在当前服务实例中，界面不会回显完整内容。</small></label>
+          <label id="visionBaseUrlField" class="vision-field"><span>接口地址</span><input id="visionBaseUrl" type="url" autocomplete="off" spellcheck="false" placeholder="https://api.example.com/v1"><small>兼容接口可填写根地址或完整的 /chat/completions 地址。</small></label>
+          <div class="vision-connect-row"><button id="discoverVisionModels" type="button" class="vision-connect-button">验证连接并读取列表</button><p id="visionConnectionStatus" class="vision-connection-status" aria-live="polite">填写密钥后验证连接。</p></div>
+        </section>
+        <section class="vision-model-section">
+          <div class="settings-section-heading"><strong>视觉模型</strong><span id="visionModelCount">等待验证</span></div>
+          <label class="vision-field"><span>账号可见模型</span><select id="visionModelSelect" disabled><option value="">验证连接后显示模型</option></select><small>列表来自服务商接口；视觉理解能力仍取决于具体模型和账号权限。</small></label>
+          <button id="toggleManualVisionModel" type="button" class="vision-manual-toggle">找不到模型？手动填写模型 ID</button>
+          <label id="visionManualModelField" class="vision-field hidden"><span>模型 ID</span><input id="visionModelManual" type="text" autocomplete="off" spellcheck="false" placeholder="输入服务商提供的视觉模型 ID"></label>
+        </section>
+        <details class="vision-advanced-settings">
+          <summary><span>兼容参数</span><small>仅在服务商明确要求时调整</small></summary>
+          <div>
+            <label class="vision-field"><span>思考模式</span><select id="visionThinkingType"><option value="">不发送该参数</option><option value="disabled">关闭</option><option value="enabled">开启</option><option value="auto">自动</option></select></label>
+            <label class="vision-field"><span>JSON 输出</span><select id="visionResponseFormat"><option value="json_object">JSON Object</option><option value="none">不发送该参数</option></select></label>
+          </div>
+        </details>
+        <footer class="settings-save-bar hidden" data-settings-save-role="vision" aria-live="polite"><span><b id="visionDirtyState">有未保存修改</b><small id="visionSaveHint">保存后立即生效</small></span><div><button id="discardVisionSettings" type="button" disabled>放弃修改</button><button id="saveVisionSettings" type="submit" class="primary" disabled>保存更改</button></div></footer>
+      </form>
+      <form id="llmSettingsForm" class="vision-settings-form model-settings-view hidden" data-model-view="llm">
+        <section class="llm-mode-section">
+          <div class="settings-section-heading"><strong>配置方式</strong><span id="llmActiveSummary">正在读取配置</span></div>
+          <div class="llm-mode-options" role="radiogroup" aria-label="剪辑规划模型配置方式">
+            <button id="llmReuseVision" type="button" data-llm-mode="reuse_vision" role="radio" aria-checked="true"><strong>复用视觉配置</strong><small>仅适合同时支持文本规划的模型</small></button>
+            <button id="llmUseIndependent" type="button" data-llm-mode="independent" role="radio" aria-checked="false"><strong>独立配置</strong><small>为剪辑规划指定另一模型</small></button>
+          </div>
+          <p id="llmReuseNotice" class="llm-reuse-notice">无需重复填写密钥。新任务会用创建时的视觉模型进行剪辑规划，请确认该模型支持稳定的文本和结构化输出。</p>
+        </section>
+        <div id="llmIndependentSettings" class="llm-independent-settings hidden">
+          <section class="vision-provider-section">
+            <div class="settings-section-heading"><strong>模型服务</strong><span>文本与推理模型</span></div>
+            <div id="llmProviderList" class="vision-provider-list llm-provider-list" role="tablist" aria-label="选择剪辑规划模型服务"></div>
+          </section>
+          <section class="vision-credential-section">
+            <label class="vision-field"><span>API Key</span><div class="vision-secret-input"><input id="llmApiKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="粘贴 API Key"><button id="toggleLlmKey" type="button">显示</button></div><small id="llmKeyHint">密钥保存在当前服务实例中，界面不会回显完整内容。</small></label>
+            <label id="llmBaseUrlField" class="vision-field"><span>接口地址</span><input id="llmBaseUrl" type="url" autocomplete="off" spellcheck="false" placeholder="https://api.example.com/v1"><small id="llmBaseUrlHelp">兼容接口可填写服务根地址。</small></label>
+            <div class="vision-connect-row"><button id="discoverLlmModels" type="button" class="vision-connect-button">验证连接并读取列表</button><p id="llmConnectionStatus" class="vision-connection-status" aria-live="polite">填写密钥后验证连接。</p></div>
+          </section>
+          <section class="vision-model-section">
+            <div class="settings-section-heading"><strong>剪辑规划模型</strong><span id="llmModelCount">等待验证</span></div>
+            <label class="vision-field"><span>账号可见模型</span><select id="llmModelSelect" disabled><option value="">验证连接后显示模型</option></select><small>列表来自服务商接口；模型还需要稳定输出文本，结构化 JSON 能力有助于生成可靠方案。</small></label>
+            <button id="toggleManualLlmModel" type="button" class="vision-manual-toggle">找不到模型？手动填写模型 ID</button>
+            <label id="llmManualModelField" class="vision-field hidden"><span>模型 ID</span><input id="llmModelManual" type="text" autocomplete="off" spellcheck="false" placeholder="输入服务商提供的文本模型 ID"></label>
+          </section>
+          <details class="vision-advanced-settings">
+            <summary><span>兼容参数</span><small>仅在服务商明确要求时调整</small></summary>
+            <div>
+              <label class="vision-field"><span>思考模式</span><select id="llmThinkingType"><option value="">不发送该参数</option><option value="disabled">关闭</option><option value="enabled">开启</option><option value="auto">自动</option></select></label>
+              <label class="vision-field"><span>JSON 输出</span><select id="llmResponseFormat"><option value="json_object">JSON Object</option><option value="none">不发送该参数</option></select></label>
+            </div>
+          </details>
+        </div>
+        <footer class="settings-save-bar hidden" data-settings-save-role="llm" aria-live="polite"><span><b id="llmDirtyState">有未保存修改</b><small id="llmSaveHint">保存后立即生效</small></span><div><button id="discardLlmSettings" type="button" disabled>放弃修改</button><button id="saveLlmSettings" type="submit" class="primary" disabled>保存更改</button></div></footer>
+      </form>
+      <form id="agentSettingsForm" class="vision-settings-form model-settings-view agent-model-settings hidden" data-model-view="agent" autocomplete="off">
+        <header class="settings-form-heading"><div><small>模型运行环境</small><h2>Agent 模型</h2><p>负责理解剪辑要求与调用工具。可复用剪辑规划模型，也可单独配置；两种方式都需要通过工具调用测试。</p></div><span id="agentSettingsState">尚未检查</span></header>
+        <section class="agent-effective-model" aria-labelledby="agentEffectiveTitle">
+          <strong id="agentEffectiveTitle">当前生效模型</strong>
+          <p id="agentEffectiveModel">正在读取配置</p>
+          <p id="agentEffectiveStatus" role="status" aria-live="polite">尚未检查工具调用能力</p>
+          <button id="testEffectiveAgent" type="button" disabled>测试工具调用</button>
+          <p id="agentEffectiveHint">测试会调用当前已保存的模型，可能产生少量服务商费用；不会修改配置或开始剪辑。</p>
+        </section>
+        <details id="agentIndependentSettings" class="agent-independent-settings" open>
+        <summary>独立模型配置<span>测试并保存后生效</span></summary>
+        <div class="vision-settings-grid">
+          <section class="vision-provider-section">
+            <div class="settings-section-heading"><strong>连接</strong><span>保存前执行真实工具调用探测</span></div>
+            <label class="vision-field"><span>服务商</span><select id="agentProvider"></select></label>
+            <label class="vision-field"><span>API Key</span><input id="agentApiKey" type="password" autocomplete="new-password" placeholder="留空可继续使用已保存密钥"><small id="agentKeyHint"></small></label>
+            <label class="vision-field"><span>接口地址</span><input id="agentBaseUrl" type="url" autocomplete="off" spellcheck="false" placeholder="https://api.example.com/v1"></label>
+            <button id="discoverAgentModels" type="button" class="vision-connect-button">验证连接并读取模型</button>
+          </section>
+          <section class="vision-model-section">
+            <div class="settings-section-heading"><strong>执行模型</strong><span id="agentProbeStatus">等待连接</span></div>
+            <label class="vision-field"><span>模型</span><select id="agentModel"><option value="">验证连接后显示模型</option></select></label>
+            <label class="vision-field"><span>思考模式</span><select id="agentThinkingType"><option value="disabled">关闭</option><option value="enabled" selected>开启</option><option value="auto">自动</option></select></label>
+          </section>
+        </div>
+        <footer class="settings-save-bar hidden" data-settings-save-role="agent" aria-live="polite"><span><b id="agentDirtyState">有未保存修改</b><small>保存前将验证模型的工具调用能力</small></span><div><button id="discardAgentSettings" type="button" disabled>放弃修改</button><button id="saveAgentSettings" type="submit" class="primary" disabled>验证并保存更改</button></div></footer>
+        </details>
+      </form>
+      <section class="model-settings-view settings-capabilities-view hidden" data-model-view="system" aria-labelledby="systemCapabilitiesTitle">
+        <header class="settings-capabilities-heading"><div><small>当前设备</small><h2 id="systemCapabilitiesTitle">系统能力</h2><p>查看本地增强能力与运行状态。这里的检查不会修改素材或模型配置。</p></div></header>
+        <section id="localCapabilities" class="local-capabilities" aria-labelledby="localCapabilitiesTitle">
+          <header><div><h3 id="localCapabilitiesTitle">人物说话识别</h3><p>默认安装 TalkNet，用于区分人物正在讲话还是仅出现在画面中。</p></div><button id="checkLocalCapabilities" type="button">检查能力</button></header>
+          <p id="localCapabilityStatus" role="status" aria-live="polite">正在读取安装状态</p>
+          <p id="localCapabilityDetail">检查不会修改素材，也不会下载或安装软件。</p>
+          <details><summary>安装与修复说明</summary><p>在运行 ClipTalk 的电脑或服务器上，进入项目目录执行：</p><code>python3 tools/setup.py</code><p>该命令默认安装 TalkNet。仅修复人物说话识别时可执行：</p><code>python3 tools/install_talknet.py</code><p>需要 Python 3.10–3.11。脚本会保留现有配置；没有可用 GPU 时使用 CPU，长视频可能较慢。安装后重启服务并重新检查。</p></details>
+        </section>
+        <details class="runtime-settings-summary">
+          <summary><span><strong>运行环境</strong><small>按需查看模型、计算设备和本地渲染状态</small></span></summary>
+          <dl><div><dt>视觉模型</dt><dd id="settingsModel">检查中</dd></div><div><dt>剪辑规划模型</dt><dd id="settingsLlmModel">检查中</dd></div><div><dt>富语音模型</dt><dd id="settingsSpeech">检查中</dd></div><div><dt>语音计算设备</dt><dd id="settingsSpeechDevice">自动选择</dd></div><div><dt>视觉分析后端</dt><dd id="settingsBackend">检查中</dd></div><div><dt>默认编码</dt><dd>H.264 · 成片画幅由当前项目决定</dd></div><div><dt>本地渲染</dt><dd id="settingsFfmpeg">检查中</dd></div></dl>
+        </details>
+      </section>
+    </section>
+    <div id="actionConfirm" class="action-confirm hidden" role="dialog" aria-modal="true" aria-labelledby="actionConfirmTitle" aria-hidden="true">
+      <div class="action-confirm-card" data-border-beam data-beam-size="pulse-inner" data-beam-color="sunset" data-beam-theme="dark" data-beam-strength="0.56" data-beam-duration="2.2" data-beam-brightness="1.2" data-beam-saturation="1" data-beam-hue-range="15" data-beam-radius="15"><header><div><small>确认操作</small><strong id="actionConfirmTitle">请确认</strong></div><button id="actionConfirmClose" type="button" aria-label="关闭">×</button></header><p id="actionConfirmSummary"></p><ul id="actionConfirmDetails"></ul><div id="actionConfirmSelectionList" class="action-confirm-selection-list hidden"></div><div id="actionConfirmOrderList" class="action-confirm-order-list hidden"></div><label id="actionConfirmOrderWrap" class="action-confirm-order hidden"><span>合成顺序</span><select id="actionConfirmOrder"><option value="selection">按选择顺序</option><option value="source">按视频时间顺序</option><option value="llm_recommend">智能排序</option></select><small id="actionConfirmOrderHint"></small></label><div id="actionConfirmWarning" class="action-confirm-warning"></div><footer><button id="actionConfirmCancel" type="button">返回修改</button><button id="actionConfirmOk" class="primary" type="button">确认执行</button></footer></div>
+    </div>
+    <div id="inputPrompt" class="input-prompt hidden" role="dialog" aria-modal="true" aria-labelledby="inputPromptTitle" aria-hidden="true">
+      <form id="inputPromptForm" class="input-prompt-card">
+        <header><div><small id="inputPromptKicker">填写信息</small><strong id="inputPromptTitle">请输入</strong></div><button id="inputPromptClose" type="button" aria-label="关闭">×</button></header>
+        <p id="inputPromptSummary"></p>
+        <label id="inputPromptField"><span id="inputPromptLabel">内容</span><input id="inputPromptInput" type="text" maxlength="120" autocomplete="off"><small id="inputPromptHint"></small></label>
+        <label id="inputPromptSelectField" class="hidden"><span id="inputPromptSelectLabel">选择目标</span><select id="inputPromptSelect"></select><small id="inputPromptSelectHint"></small></label>
+        <footer><button id="inputPromptCancel" type="button">取消</button><button id="inputPromptOk" class="primary" type="submit">保存</button></footer>
+      </form>
+    </div>
+    <section id="coverImagePreview" class="cover-image-preview hidden" role="dialog" aria-modal="true" aria-labelledby="coverImagePreviewTitle" aria-hidden="true" data-overlay-state="closed" tabindex="-1">
+      <button class="cover-image-preview-scrim" type="button" data-cover-image-preview-close aria-label="关闭封面大图预览"></button>
+      <article class="cover-image-preview-card">
+        <header><div><small>封面候选</small><h2 id="coverImagePreviewTitle">封面大图预览</h2><p id="coverImagePreviewMeta"></p></div><button type="button" data-cover-image-preview-close aria-label="关闭封面大图预览">×</button></header>
+        <figure><img id="coverImagePreviewImage" alt="当前封面候选的大图预览"></figure>
+      </article>
+    </section>
+    <section id="subtitleReview" class="subtitle-review hidden" aria-labelledby="subtitleReviewTitle" aria-hidden="true" data-overlay-state="closed">
+      <button class="subtitle-review-scrim" type="button" data-subtitle-close aria-label="关闭字幕校对"></button>
+      <aside class="subtitle-review-panel" role="dialog" aria-modal="true">
+        <header class="subtitle-review-header">
+          <div><small>最终字幕确认</small><h2 id="subtitleReviewTitle">字幕校对</h2><p>识别结果只是草稿。确认后才会烧录进正式成片。</p></div>
+          <button type="button" class="subtitle-review-close" data-subtitle-close aria-label="关闭">×</button>
+        </header>
+        <div class="subtitle-review-body">
+          <section class="subtitle-preview-card">
+            <div class="subtitle-preview-stage" id="subtitlePreviewStage">
+              <video id="subtitleReviewVideo" muted playsinline preload="metadata"></video>
+              <div id="subtitlePreviewText" class="subtitle-preview-text">选择一条字幕查看位置</div>
+              <i class="subtitle-safe-area" aria-hidden="true"></i>
+            </div>
+            <div class="subtitle-preview-meta"><span id="subtitleStyleSummary">字号 4.0%（按画面短边） · 底部居中</span><span>虚线为实际画面的 5% 安全区</span></div>
+          </section>
+          <section class="subtitle-source-card">
+            <div class="subtitle-section-heading"><div><strong>原视频字幕确认</strong><small>AI 字幕会直接叠加到源视频画面，无法自动移除已烧录的原字幕</small></div></div>
+            <label class="subtitle-source-ack"><input id="subtitleSourceAck" type="checkbox"><span>我已检查预览：原视频没有需要保留的字幕，或我确认允许 AI 字幕叠加（可能出现双字幕）</span></label>
+            <p class="subtitle-source-warning">未勾选前不能确认字幕，也不能生成成片。</p>
+          </section>
+          <section class="subtitle-command-card">
+            <div class="subtitle-section-heading"><div><strong>字号与位置</strong><small>默认作用于全部字幕；命令写“当前这条”才只改单条</small></div></div>
+            <div class="subtitle-quick-controls">
+              <button type="button" data-subtitle-command="字号小一点">A−</button><button type="button" data-subtitle-command="字号大一点">A＋</button>
+              <button type="button" data-subtitle-command="放到顶部">顶部</button><button type="button" data-subtitle-command="放到画面中央">中央</button><button type="button" data-subtitle-command="放到底部">底部</button>
+            </div>
+            <form id="subtitleCommandForm" class="subtitle-command-form"><input id="subtitleCommandInput" type="text" autocomplete="off" placeholder="例如：字号 48px、整体上移 5%、当前这条放到左上"><button type="submit">应用命令</button></form>
+            <p id="subtitleCommandStatus" class="subtitle-command-status" aria-live="polite"></p>
+          </section>
+          <section class="subtitle-cues-section">
+            <div class="subtitle-section-heading"><div><strong>逐条核对</strong><small id="subtitleCueCount">0 条字幕</small></div><div class="subtitle-ai-actions"><button id="subtitleAcceptSafeButton" type="button" class="hidden">接受低风险建议</button><button id="subtitleSuggestButton" type="button" class="subtitle-ai-button">AI 全文校对</button></div></div>
+            <p class="subtitle-ai-notice">AI 会先理解完整逐字稿及可用屏幕文字，再提出最小修改。它不会听音频，也不会直接覆盖原文；数字、人名、品牌和型号仍需人工核对。</p>
+            <div id="subtitleCorrectionContext" class="subtitle-correction-context hidden"></div>
+            <div id="subtitleCueList" class="subtitle-cue-list"></div>
+          </section>
+        </div>
+        <footer class="subtitle-review-footer"><div><span id="subtitleSaveState">尚未确认</span><small>修改文字或时间后会回到待确认状态</small></div><button type="button" data-subtitle-close>返回</button><button id="subtitleSaveButton" type="button">保存草稿</button><button id="subtitleConfirmButton" class="primary" type="button" disabled>确认字幕并继续导出</button></footer>
+      </aside>
+    </section>
+    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <dialog id="agentRegistryDialog" class="agent-registry-dialog" aria-labelledby="agentRegistryTitle">
+      <form method="dialog" class="agent-registry-shell">
+        <header><div><small>Agent 能力</small><h2 id="agentRegistryTitle">Skills 与 Plugins</h2><p>Skill 负责拆解方法；Plugin 是在 Agent 进程内运行的受信任代码。</p></div><button value="cancel" aria-label="关闭">×</button></header>
+        <nav><button type="button" data-agent-registry-tab="skills" class="active">Skills</button><button type="button" data-agent-registry-tab="plugins">Plugins</button></nav>
+        <section id="agentRegistryContent" class="agent-registry-content"></section>
+      </form>
+    </dialog>
+    <dialog id="accessTokenDialog" class="access-token-dialog" aria-labelledby="accessTokenTitle">
+      <form method="dialog">
+        <small>受保护的本地服务</small>
+        <h2 id="accessTokenTitle">输入访问令牌</h2>
+        <p>令牌只保存在当前标签页会话中，不会写入地址栏。</p>
+        <label><span>访问令牌</span><input type="password" autocomplete="current-password" required></label>
+        <footer><button type="button" data-auth-cancel>取消</button><button type="submit" class="primary">继续</button></footer>
+      </form>
+    </dialog>
+    <script src="/static/thinking-orbs.js?v=20260806-subtitle-label-69" defer></script>
+    <script src="/static/generative-loaders.js?v=20260811-loader-runtime-2" defer></script>
+    <script src="/static/border-beam.js?v=20260811-border-beam-2" defer></script>
+    <script src="/static/ui-icons.js?v=20260827-home-icons-1" defer></script>
+    <script src="/static/api-client.js?v=20260909-workflow-audit-1" defer></script>
+    <script src="/static/runtime-errors.js?v=20260821-runtime-errors-1" defer></script>
+    <script src="/static/review-actions.js?v=20260821-review-actions-1" defer></script>
+    <script src="/static/workspace-state.js?v=20260911-user-journey-1" defer></script>
+    <script src="/static/ui-copy.js?v=20260915-capability-groups-1" defer></script>
+    <script src="/static/task-creation.js?v=20260915-video-rework-1" defer></script>
+    <script src="/static/agent-workspace.js?v=20260915-agent-sync-1" defer></script>
+    <script src="/static/delivery-state.js?v=20260910-render-spec-2" defer></script>
+    <script src="/static/app.js?v=20260915-explicit-skill-2" defer></script>
+    <script src="/static/app-shell.js?v=20260915-capability-groups-1" defer></script>
+    <script src="/static/timeline-presentation.js?v=20260914-unified-flow-2" defer></script>
+    <script src="/static/workspace-controller.js?v=20260915-cover-task-focus-1" defer></script>
+  </body>
+</html>
